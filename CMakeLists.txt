@@ -3,5 +3,13 @@ project(TATextEditor)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(TATextEditor
-        main.cpp)
+add_executable(
+        TATextEditor
+        main.cpp
+        Text.h
+        Text.cpp
+        Sentence.h
+        Sentence.cpp
+        Word.h
+        Word.cpp
+)

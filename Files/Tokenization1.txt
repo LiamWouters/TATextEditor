@@ -1,0 +1,2 @@
+Dit is een test tekst, gemaakt om de tokenization te testen.
+Sentence chaining zou dit in een gepaste datastructuur moeten steken.
