@@ -10,5 +10,5 @@ int main() {
     Text text;
     text.Tokenize(filename);
 
-    return -1;
+    return 0;
 };

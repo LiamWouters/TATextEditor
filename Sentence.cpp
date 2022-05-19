@@ -16,3 +16,9 @@ void Sentence::addWord(Word* token) {
 int Sentence::size() {
     return words.size();
 }
+
+Sentence::~Sentence() {
+    for (Word* w : words) {
+        delete w;
+    }
+}

@@ -15,12 +15,19 @@ class Text {
 private:
     vector<Sentence*> sentences;
 
+    /*
+     * function used for debugging
+     * prints all sentences to cout
+     * with spaces between all words and enters between all sentences
+     */
+    void print();
 public:
     void Tokenize(string filename);
 
     const vector<Sentence *> &getSentences() const;
     void addSentence(Sentence* s);
 
+    virtual ~Text();
 };
 
 #endif //TATEXTEDITOR_TEXT_H

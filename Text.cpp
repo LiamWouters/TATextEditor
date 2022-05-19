@@ -5,9 +5,24 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 #include "Text.h"
 #include "Sentence.h"
 #include "Word.h"
+
+/// Private functions ///
+void Text::print() {
+    for (int j = 0; j < getSentences().size(); j++) {
+        Sentence* s = getSentences()[j];
+        for (int i = 0; i < s->size(); i++) {
+            cout << s->getWord(i)->getString() << " ";
+        }
+        cout << endl;
+    }
+}
+
+////////////////////////
+/// Public functions ///
 
 void Text::Tokenize(string filename) {
     ifstream file;
@@ -47,15 +62,14 @@ void Text::Tokenize(string filename) {
             sentence->addWord(w);
         }
     }
-    // Remove this part later
-    for (int j = 0; j < getSentences().size(); j++) {
-        Sentence* s = getSentences()[j];
-        for (int i = 0; i < s->size(); i++) {
-            cout << s->getWord(i)->getString() << endl;
-        }
-        cout << endl << "END OF SENTENCE" << endl << endl;
+    // if the text doesn't end with a '.'
+    // we will still add the sentence to the text
+    auto it = find(sentences.begin(), sentences.end(), sentence);
+    if (it == sentences.end()) {
+        sentences.push_back(sentence);
     }
-    return;
+
+    print();
 }
 
 const vector<Sentence *> &Text::getSentences() const {
@@ -64,4 +78,10 @@ const vector<Sentence *> &Text::getSentences() const {
 
 void Text::addSentence(Sentence* s) {
     sentences.push_back(s);
+}
+
+Text::~Text() {
+    for (Sentence* s : sentences) {
+        delete s;
+    }
 }

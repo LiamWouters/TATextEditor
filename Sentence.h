@@ -18,6 +18,8 @@ public:
     Word* getWord(int index);
     void addWord(Word* token);
     int size();
+
+    virtual ~Sentence();
 };
 
 #endif //TATEXTEDITOR_SENTENCE_H
