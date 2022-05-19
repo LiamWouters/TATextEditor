@@ -1,0 +1,4 @@
+This second edge case is made for testing the use of ... , that! Exactly that! It should also be able to read this
+when connected to a word like this... if its being read before a comma like this "...," it should also not end the sentence.
+We will implement this by checking for triple dots every time we come across a dot at the end of a
+token (using a saved DFA) and pulling it off as its own punctuation mark.

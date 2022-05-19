@@ -35,7 +35,7 @@ void Text::Tokenize(string filename) {
 
         if (token.back() == '.' or token.back() == '!' or token.back() == '?') {
             /// TO DO:
-            // check voor "..." (niet persee einde zin
+            // check voor "..." (niet persee einde zin)
             // check voor vb: "Dr."
             ///
             Word* punctMark = new Word(token.substr(token.size()-1));
