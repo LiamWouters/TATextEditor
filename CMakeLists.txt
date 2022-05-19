@@ -12,4 +12,13 @@ add_executable(
         Sentence.cpp
         Word.h
         Word.cpp
+        DFA.h
+        DFA.cpp
+        ENFA.h
+        ENFA.cpp
+        json.hpp
+        NFA.h
+        NFA.cpp
+        RE.h
+        RE.cpp
 )
