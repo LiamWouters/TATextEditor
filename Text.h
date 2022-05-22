@@ -23,7 +23,7 @@ private:
     void print();
 
     /// Private Functions ///
-    bool checkAbbreviation(string token);
+    void makeAbbreviationsAutomata();
 public:
     void Tokenize(string filename);
 

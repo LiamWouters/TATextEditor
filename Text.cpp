@@ -25,11 +25,11 @@ void Text::print() {
     }
 }
 
-bool Text::checkAbbreviation(string token) {
+void Text::makeAbbreviationsAutomata() {
     // check if the DFA already exists
-    ifstream abbreviationDFA;
-    abbreviationDFA.open("../SavedAutomata/Abbreviations.json");
-    if (!abbreviationDFA) {
+    ifstream abbreviationENFA;
+    abbreviationENFA.open("../SavedAutomata/Abbreviations.john");
+    if (!abbreviationENFA) {
         // if not create the abbreviation.json
         ifstream abbreviations;
         abbreviations.open("../SavedAutomata/Abbreviations.txt");
@@ -45,19 +45,24 @@ bool Text::checkAbbreviation(string token) {
         result.pop_back();
         result.erase( std::remove(result.begin(), result.end(), '\r'), result.end() );
 
-        RE* regex = new RE(result, ':'); // this takes a long while
-        ENFA enfa = regex->toENFA();
-        DFA dfa = enfa.toDFA();
-        dfa.minimize();
-        dfa.printToFile("Abbreviations");
-        abbreviationDFA.open("../SavedAutomata/Abbreviations.json");
-        if (!abbreviationDFA) {
-            cerr << "fout bij aanmaken van Abbreviations.json" << endl;
+        if (true ) {
+            RE *regex = new RE(result, ':'); // this takes a long while
+            ENFA enfa = regex->toENFA();
+            DFA dfa = enfa.toDFA();
+            //dfa.minimize();
+            dfa.printToFile("AbbreviationsDFAMinimized");
         }
+        else {
+            RE *regex = new RE(result, ':'); // this takes a long while
+            ENFA enfa = regex->toENFA();
+            //DFA dfa = enfa.toDFA();
+            //dfa.minimize();
+            enfa.printToFile("AbbreviationsENFA");
+        }
+
+        abbreviations.close();
     }
-    DFA abbreviationsDFA = DFA("../SavedAutomata/Abbreviations.json");
-    abbreviationsDFA.setAlphabet({"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"}); // delete this line
-    return abbreviationsDFA.accepts(token);
+    abbreviationENFA.close();
 }
 
 ////////////////////////
@@ -68,6 +73,13 @@ void Text::Tokenize(string filename) {
     file.open(filename);
 
     Sentence* sentence = new Sentence();
+
+    ifstream abbreviationENFA;
+    abbreviationENFA.open("../SavedAutomata/AbbreviationsDFAMinimized.json");
+    if (!abbreviationENFA) {makeAbbreviationsAutomata();}
+    abbreviationENFA.close();
+    ENFA* abbreviationsENFA = new ENFA("../SavedAutomata/AbbreviationsDFAMinimized.json");
+
     while (!file.eof()) {
         string token;
         file >> token;
@@ -84,7 +96,7 @@ void Text::Tokenize(string filename) {
             // check voor vb: "Dr."
             ///
 
-            if (checkAbbreviation(token)) {
+            if (token.back() == '.' && abbreviationsENFA->accepts(token)) {
                 Word *w = new Word(token);
                 sentence->addWord(w);
             } else {
@@ -120,6 +132,7 @@ void Text::Tokenize(string filename) {
         sentences.push_back(sentence);
     }
 
+    delete abbreviationsENFA;
     file.close();
 }
 

@@ -303,4 +303,3 @@ ENFA Star(const ENFA & enfa1) {
     enfa.setEclose(newEclose);
     return enfa;
 }
-

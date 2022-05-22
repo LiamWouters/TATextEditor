@@ -33,6 +33,8 @@ public:
 
     void printStats();
 
+    void printToFile(string filename);
+
     const vector<tuple<string, bool, bool>> &getStates() const;
 
     void setStates(const vector<tuple<string, bool, bool>> &states);
