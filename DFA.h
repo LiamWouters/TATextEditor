@@ -31,6 +31,8 @@ public:
 
     void print();
 
+    void printToFile(string filename);
+
     RE toRE();
 
     DFA minimize();

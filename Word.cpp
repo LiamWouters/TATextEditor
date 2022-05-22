@@ -19,3 +19,11 @@ void Word::setPunctuationMark() {
 bool Word::isPunctuationMark() {
     return punctuation;
 }
+
+void Word::setAbbreviation() {
+    abbreviation = true;
+}
+
+bool Word::isAbbreviation() {
+    return abbreviation;
+}

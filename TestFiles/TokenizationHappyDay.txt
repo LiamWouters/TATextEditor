@@ -1,2 +1,2 @@
 This is a test text, made to try out tokenization.
-Sentence chaining should put this text into a fitting datastructure.
+Sentence chaining should put this text into a fitting datastructure!

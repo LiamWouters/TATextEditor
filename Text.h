@@ -21,6 +21,9 @@ private:
      * with spaces between all words and enters between all sentences
      */
     void print();
+
+    /// Private Functions ///
+    bool checkAbbreviation(string token);
 public:
     void Tokenize(string filename);
 

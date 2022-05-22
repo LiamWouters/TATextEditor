@@ -84,6 +84,40 @@ void DFA::print() {
     cout << setw(4) << j << endl;
 }
 
+void DFA::printToFile(string filename) {
+    json j;
+    json type;
+    json alph;
+    json sts;
+    json trans;
+    type = "DFA";
+    for (auto i:alphabet) {
+        alph.push_back(i);
+    }
+    for (auto i:states) {
+        json a;
+        a["name"] = get<0>(i);
+        a["starting"] = get<1>(i);
+        a["accepting"] = get<2>(i);
+        sts.push_back(a);
+    }
+    for (auto i:transitions) {
+        json a;
+        a["from"] = get<0>(i);
+        a["to"] = get<1>(i);
+        a["input"] = get<2>(i);
+        trans.push_back(a);
+    }
+    j["type"] = type;
+    j["alphabet"] = alph;
+    j["states"] = sts;
+    j["transitions"] = trans;
+
+    ofstream outputFile;
+    outputFile.open("../SavedAutomata/"+ filename +".json");
+    outputFile << setw(4) << j;
+}
+
 RE DFA::toRE() {
     string re;
     string tre;

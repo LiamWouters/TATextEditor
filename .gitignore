@@ -1,4 +1,6 @@
-# Prerequisites
+gtest/lib
+
+µ# Prerequisites
 *.d
 
 # Compiled Object files

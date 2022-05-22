@@ -15,9 +15,11 @@ class Sentence {
 private:
     vector<Word*> words;
 public:
+    vector<Word*> getWords();
     Word* getWord(int index);
     void addWord(Word* token);
     int size();
+    int getWordCount();
 
     virtual ~Sentence();
 };

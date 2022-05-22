@@ -13,12 +13,15 @@ private:
     string word;
 
     bool punctuation; // is een punt, uitroepteken, vraagteken, komma
+    bool abbreviation; // is een afkorting vb: "Dr."
 public:
     Word(const string &word);
 
     string getString();
     void setPunctuationMark();
     bool isPunctuationMark();
+    void setAbbreviation();
+    bool isAbbreviation();
 };
 
 #endif //TATEXTEDITOR_WORD_H

@@ -5,6 +5,10 @@
 #include "Sentence.h"
 #include "Word.h"
 
+vector<Word *> Sentence::getWords() {
+    return words;
+}
+
 Word *Sentence::getWord(int index) {
     return words[index];
 }
@@ -17,8 +21,20 @@ int Sentence::size() {
     return words.size();
 }
 
-Sentence::~Sentence() {
+int Sentence::getWordCount() {
+    // size without punctuation marks
+    int wCount = 0;
     for (Word* w : words) {
+        if (!w->isPunctuationMark()) {
+            wCount += 1;
+        }
+    }
+    return wCount;
+}
+
+
+Sentence::~Sentence() {
+    for (Word *w: words) {
         delete w;
     }
 }

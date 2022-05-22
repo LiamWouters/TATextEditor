@@ -5,4 +5,5 @@ voor gebruik. Als er geen DFA gevonden is zal het deze opstellen.
 Huidige saved automata:
 
 Dictionary. (lijst van woorden)
-Abbreviations. (lijst met afkortingen zoals "Dr.")
+Abbreviations. (lijst met afkortingen zoals "Dr.", enkel afkortingen die eindigen op '.')
+        -> Source: https://public.oed.com/how-to-use-the-oed/abbreviations/
