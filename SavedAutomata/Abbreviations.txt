@@ -152,8 +152,7 @@ Bucks.
 Build.
 Bull.
 Bur.
-c.	century
-C.	county, counties
+c.
 Cal.
 Calc.
 Calend.

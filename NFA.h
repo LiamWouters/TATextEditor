@@ -20,7 +20,11 @@ private:
     vector<tuple<string,string,string>> transitions;
     vector<string> alphabet;
 public:
+    NFA();
+
     NFA(string);
+
+    void fileToNFA(string filename);
 
     DFA toDFA();
 };

@@ -116,6 +116,7 @@ void DFA::printToFile(string filename) {
     ofstream outputFile;
     outputFile.open("../SavedAutomata/"+ filename +".json");
     outputFile << setw(4) << j;
+    outputFile.close();
 }
 
 RE DFA::toRE() {
