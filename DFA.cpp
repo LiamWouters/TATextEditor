@@ -24,7 +24,7 @@ bool DFA::accepts(string s) {
     bool b = true;
     for (auto j:s){
         if (!b) {
-            cout << "fout alfabet" << endl;
+            //cout << "fout alfabet" << endl;
             return false;
         }
         for(auto i:alphabet) {

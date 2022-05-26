@@ -9,6 +9,7 @@
 #include <string>
 using namespace std;
 
+class DFA;
 class Sentence;
 
 class Text {
@@ -24,6 +25,7 @@ private:
 
     /// Private Functions ///
     void makeAbbreviationsAutomata();
+    void checkToken(string token, DFA* abbreviationsDFA);
 public:
     void Tokenize(string filename);
 

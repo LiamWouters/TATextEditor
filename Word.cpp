@@ -4,20 +4,21 @@
 
 #include "Word.h"
 
-Word::Word(const string &word) : word(word) {
-    punctuation = false;
+Word::Word(const string &token) : token(token) {
+    specialChar = false;
+    abbreviation = false;
 }
 
 string Word::getString() {
-    return word;
+    return token;
 }
 
-void Word::setPunctuationMark() {
-    punctuation = true;
+void Word::setSpecialChar() {
+    specialChar = true;
 }
 
-bool Word::isPunctuationMark() {
-    return punctuation;
+bool Word::isSpecialChar() {
+    return specialChar;
 }
 
 void Word::setAbbreviation() {

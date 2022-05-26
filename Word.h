@@ -10,16 +10,16 @@ using namespace std;
 
 class Word {
 private:
-    string word;
+    string token;
 
-    bool punctuation; // is een punt, uitroepteken, vraagteken, komma
+    bool specialChar; // is een special character: punt, komma, ...
     bool abbreviation; // is een afkorting vb: "Dr."
 public:
-    Word(const string &word);
+    Word(const string &token);
 
     string getString();
-    void setPunctuationMark();
-    bool isPunctuationMark();
+    void setSpecialChar();
+    bool isSpecialChar();
     void setAbbreviation();
     bool isAbbreviation();
 };

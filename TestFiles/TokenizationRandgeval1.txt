@@ -1,4 +1,5 @@
 This edge case is made to test the use of the dot. If a dot is behind a certain abbreviation such as " Dr. ", the dot should not
 mark the end of the sentence. The way the system checks for these abbreviations is by creating and saving a DFA
 (minimized for efficiency). Whenever a token contains a dot it will run this token through the DFA, if it is accepted
-it would not end the sentence meaning that it is an abbreviation.
+it would not end the sentence meaning that it is an abbreviation. Test sentence: Dr. Mike is a famous youtuber.
+Some other examples of popular abbreviations: e.g. approx. Mr. Mrs. vs.

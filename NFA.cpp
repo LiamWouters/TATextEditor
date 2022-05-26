@@ -29,7 +29,7 @@ void NFA::fileToNFA(string filename) {
     alphabet = {".", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
     while (getline(file, line)) {
         line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
-        cout << line << endl;
+        //cout << line << endl;
         for (int i = 0; i < line.size(); i++) {
             line[i] = tolower(line[i]);
             lettercount += 1;
@@ -58,7 +58,7 @@ void NFA::fileToNFA(string filename) {
             }
         }
     }
-    cout << endl;
+    //cout << endl;
 }
 
 DFA NFA::toDFA() {
@@ -148,90 +148,5 @@ DFA NFA::toDFA() {
     dfa.setTransitions(newTransitions);
     return dfa;
 }
-
-/*
-/*
-     * Functie:
-     *      -> schrijf naar een json file, creeer DFA met de json
-     *
-     * Subset Construction:
-     *      -> elke state moet een transitie hebben voor elk input symbool uit het alphabet
-     *      -> elke state mag maar 1 keer een input symbool gebruiken
-
-/// Write DFA ///
-// construction
-string newDFA = """{\n\t\"type\": \"DFA\",\n""" ;
-/*
- * alphabet
- *
-newDFA += """\t\"alphabet\": [\n""";
-for (int i = 0; i < alphabet.size(); i++) {
-newDFA += "\t\t\"" + alphabet[i] +  "\"";
-if (alphabet.size() > 1 && i != alphabet.size() - 1) {
-newDFA += ",";
-}
-newDFA += "\n";
-}
-newDFA += """\t],\n""";
-/*
- * states
- *
-newDFA += """\t\"states\": [\n""";
-
-for (tuple<string, bool, bool> s : states) {
-bool starting = get<1>(s);
-
-bool accepting = get<2>(s);
-
-string name = get<0>(s);
-
-newDFA += """\t\t{\n""";
-newDFA += "\t\t\t\"name\": \"" + name + "\",\n";
-if (starting) {newDFA += "\t\t\t\"starting\": true,\n";}
-else {newDFA += "\t\t\t\"starting\": false,\n";}
-if (accepting) {newDFA += "\t\t\t\"accepting\": true\n";}
-else {newDFA += "\t\t\t\"accepting\": false\n";}
-newDFA += "\t\t},\n";
-}
-newDFA.erase(newDFA.size()-2);
-newDFA += "\n\t],\n";
-
-/*
- * transitions
- *
-newDFA += "\t\"transitions\": [\n";
-for (tuple<string,bool,bool> s : states) {
-string fromName = get<0>(s);
-for (string symbol : alphabet) {
-string toName = "";
-for( int i = 0; i < transitions.size(); i++) {
-if (get<0>(transitions[i]) == fromName && get<2>(transitions[i]) == symbol) {
-if (toName != "") {
-toName += ", ";
-}
-toName += get<1>(transitions[i]);
-}
-}
-if (toName == "") continue;
-newDFA += """\t\t{\n""";
-newDFA += "\t\t\t\"from\": \"" + fromName + "\",\n";
-newDFA += "\t\t\t\"to\": \"" + toName + "\",\n";
-newDFA += "\t\t\t\"input\": \"" + symbol + "\"\n";
-newDFA += """\t\t},\n""";
-}
-}
-newDFA.erase(newDFA.size()-2);
-newDFA += "\n\t]\n}";
-
-/// Write to file ///
-ofstream newDFAFile("SubsetConstruction.json");
-
-newDFAFile << newDFA;
-
-newDFAFile.close();
-
-/// create DFA ///
-return DFA("SubsetConstruction.json");
- */
 
 NFA::NFA() {}

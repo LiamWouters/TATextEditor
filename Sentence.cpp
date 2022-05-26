@@ -25,7 +25,7 @@ int Sentence::getWordCount() {
     // size without punctuation marks
     int wCount = 0;
     for (Word* w : words) {
-        if (!w->isPunctuationMark()) {
+        if (!w->isSpecialChar()) {
             wCount += 1;
         }
     }
