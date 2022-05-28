@@ -18,6 +18,10 @@ private:
     bool isVowel(char* c);
     bool isConsonant(string word, int index);
     bool changeSuffix(string& word, string S1, string S2);
+    int calculateMeasure(string word);
+    bool containsVowel(string word);
+    bool endsWithDoubleConsonant(string word);
+    bool endsCVC(string word);
 public:
     Word(const string &token);
 

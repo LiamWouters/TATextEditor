@@ -131,8 +131,10 @@ void Text::Tokenize(string filename) {
                 Word *punctMark = new Word(token.substr(token.size() - 1));
                 punctMark->setSpecialChar();
                 token = token.substr(0, token.size() - 1);
-                Word *w = new Word(token);
-                sentence->addWord(w);
+                if (token != "") {
+                    Word *w = new Word(token);
+                    sentence->addWord(w);
+                }
                 sentence->addWord(punctMark);
 
                 // end sentence and start a new one.
@@ -158,11 +160,13 @@ void Text::Tokenize(string filename) {
                 sentence->addWord(tripleDot); sentence->addWord(comma);
                 continue;
             }
-            Word* w = new Word(token);
-            if (abbreviationDFA->accepts(token)) {
-                w->setAbbreviation();
+            if (token != "") {
+                Word *w = new Word(token);
+                if (abbreviationDFA->accepts(token)) {
+                    w->setAbbreviation();
+                }
+                sentence->addWord(w);
             }
-            sentence->addWord(w);
             sentence->addWord(comma);
         }
         //else if (token.back() == '"') {
