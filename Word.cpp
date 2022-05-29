@@ -210,6 +210,7 @@ string Word::Stem() {
             }
         }
 
+        // (m=1 and *o) -> E
         if (!skip) {
             if (calculateMeasure(token) == 1 && endsCVC(token)) {
                 token += "e";
@@ -507,6 +508,200 @@ string Word::Stem() {
     }
 
     ///
+    skip = false; // reset bool
+    skip2 = false;
+    ///
+
+    // (m>1) AL ->
+    if (!skip) {
+        skip = changeSuffix(token, "al", "");
+        if (!(calculateMeasure(token) > 1) && skip == true) {
+            changeSuffix(token, "", "al"); // put suffix back to how it was
+        }
+    }
+
+    // (m>1) ANCE ->
+    if (!skip) {
+        skip = changeSuffix(token, "ance", "");
+        if (!(calculateMeasure(token) > 1) && skip == true) {
+            changeSuffix(token, "", "ance"); // put suffix back to how it was
+        }
+    }
+
+    // (m>1) ENCE ->
+    if (!skip) {
+        skip = changeSuffix(token, "ence", "");
+        if (!(calculateMeasure(token) > 1) && skip == true) {
+            changeSuffix(token, "", "ence"); // put suffix back to how it was
+        }
+    }
+
+    // (m>1) ENCE ->
+    if (!skip) {
+        skip = changeSuffix(token, "ence", "");
+        if (!(calculateMeasure(token) > 1) && skip == true) {
+            changeSuffix(token, "", "ence"); // put suffix back to how it was
+        }
+    }
+
+    // (m>1) ER ->
+    if (!skip) {
+        skip = changeSuffix(token, "er", "");
+        if (!(calculateMeasure(token) > 1) && skip == true) {
+            changeSuffix(token, "", "er"); // put suffix back to how it was
+        }
+    }
+
+    // (m>1) IC ->
+    if (!skip) {
+        skip = changeSuffix(token, "ic", "");
+        if (!(calculateMeasure(token) > 1) && skip == true) {
+            changeSuffix(token, "", "ic"); // put suffix back to how it was
+        }
+    }
+
+    // (m>1) ABLE ->
+    if (!skip) {
+        skip = changeSuffix(token, "able", "");
+        if (!(calculateMeasure(token) > 1) && skip == true) {
+            changeSuffix(token, "", "able"); // put suffix back to how it was
+        }
+    }
+
+    // (m>1) IBLE ->
+    if (!skip) {
+        skip = changeSuffix(token, "ible", "");
+        if (!(calculateMeasure(token) > 1) && skip == true) {
+            changeSuffix(token, "", "ible"); // put suffix back to how it was
+        }
+    }
+
+    // (m>1) ANT ->
+    if (!skip) {
+        skip = changeSuffix(token, "ant", "");
+        if (!(calculateMeasure(token) > 1) && skip == true) {
+            changeSuffix(token, "", "ant"); // put suffix back to how it was
+        }
+    }
+
+    // (m>1) EMENT ->
+    if (!skip) {
+        skip = changeSuffix(token, "ement", "");
+        if (!(calculateMeasure(token) > 1) && skip == true) {
+            changeSuffix(token, "", "ement"); // put suffix back to how it was
+        }
+    }
+
+    // (m>1) MENT ->
+    if (!skip) {
+        skip = changeSuffix(token, "ment", "");
+        if (!(calculateMeasure(token) > 1) && skip == true) {
+            changeSuffix(token, "", "ment"); // put suffix back to how it was
+        }
+    }
+
+    // (m>1) ENT ->
+    if (!skip) {
+        skip = changeSuffix(token, "ent", "");
+        if (!(calculateMeasure(token) > 1) && skip == true) {
+            changeSuffix(token, "", "ent"); // put suffix back to how it was
+        }
+    }
+
+    // (m>1 and (*S or *T)) ION ->
+    if (!skip) {
+        skip = changeSuffix(token, "ion", "");
+        if (!(calculateMeasure(token) > 1) && skip == true && !(token[token.length()-1] == 's' or token[token.length()-1] == 't')) {
+            changeSuffix(token, "", "ion"); // put suffix back to how it was
+        }
+    }
+
+    // (m>1) OU ->
+    if (!skip) {
+        skip = changeSuffix(token, "ou", "");
+        if (!(calculateMeasure(token) > 1) && skip == true) {
+            changeSuffix(token, "", "ou"); // put suffix back to how it was
+        }
+    }
+
+    // (m>1) ISM ->
+    if (!skip) {
+        skip = changeSuffix(token, "ism", "");
+        if (!(calculateMeasure(token) > 1) && skip == true) {
+            changeSuffix(token, "", "ism"); // put suffix back to how it was
+        }
+    }
+
+    // (m>1) ATE ->
+    if (!skip) {
+        skip = changeSuffix(token, "ate", "");
+        if (!(calculateMeasure(token) > 1) && skip == true) {
+            changeSuffix(token, "", "ate"); // put suffix back to how it was
+        }
+    }
+
+    // (m>1) ITI ->
+    if (!skip) {
+        skip = changeSuffix(token, "iti", "");
+        if (!(calculateMeasure(token) > 1) && skip == true) {
+            changeSuffix(token, "", "iti"); // put suffix back to how it was
+        }
+    }
+
+    // (m>1) OUS ->
+    if (!skip) {
+        skip = changeSuffix(token, "ous", "");
+        if (!(calculateMeasure(token) > 1) && skip == true) {
+            changeSuffix(token, "", "ous"); // put suffix back to how it was
+        }
+    }
+
+    // (m>1) IVE ->
+    if (!skip) {
+        skip = changeSuffix(token, "ive", "");
+        if (!(calculateMeasure(token) > 1) && skip == true) {
+            changeSuffix(token, "", "ive"); // put suffix back to how it was
+        }
+    }
+
+    // (m>1) IZE ->
+    if (!skip) {
+        skip = changeSuffix(token, "ize", "");
+        if (!(calculateMeasure(token) > 1) && skip == true) {
+            changeSuffix(token, "", "ize"); // put suffix back to how it was
+        }
+    }
+
+    ///
+    skip = false; // reset bool
+    skip2 = false;
+    ///
+
+    // (m>1) E ->
+    if (!skip) {
+        skip = changeSuffix(token, "e", "");
+        if (!(calculateMeasure(token) > 1) && skip == true) {
+            changeSuffix(token, "", "e"); // put suffix back to how it was
+            skip = false;
+        }
+    }
+
+    // (m=1 and not *o) E ->
+    if (!skip) {
+        skip = changeSuffix(token, "e", "");
+        if (calculateMeasure(token) == 1 && endsCVC(token) && skip == true) {
+            changeSuffix(token, "", "e"); // put suffix back to how it was
+        }
+    }
+
+    ///
+    ///
+
+    // m > 1 and double consonants and L
+    if (calculateMeasure(token) > 1 && endsWithDoubleConsonant(token) && token[token.length()-1] == 'l') {
+        token = token.substr(0, token.length()-1);
+    }
+
     cout << token << endl;
     return rootForm;
 }
