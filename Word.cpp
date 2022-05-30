@@ -106,6 +106,10 @@ string Word::getString() {
     return token;
 }
 
+string Word::getRoot() {
+    return root;
+}
+
 void Word::setSpecialChar() {
     specialChar = true;
 }
@@ -127,33 +131,26 @@ string Word::Stem() {
      * The porter algorithm for suffix trimming (stemming)
      * source: http://facweb.cs.depaul.edu/mobasher/classes/csc575/papers/porter-algorithm.html
      */
-    string rootForm;
+    string rootForm = token;
     bool skip = false; // bool used to skip parts if necessary
     bool skip2 = false; // another bool used for deciding if certain parts need to be skipped or not
 
-    //cout << "word: "<< token << ", measure: " << calculateMeasure(token) << endl;
-
-    if (token == "bled") {
-        cout << "FOR DEBUG" << endl;
-    }
-
-    cout << token << " -> ";
     ///
     // SSES -> SS
     if (!skip) {
-        skip = changeSuffix(token, "sses", "ss");
+        skip = changeSuffix(rootForm, "sses", "ss");
     }
     // IES -> I
     if (!skip) {
-        skip = changeSuffix(token, "ies", "i");
+        skip = changeSuffix(rootForm, "ies", "i");
     }
     // SS -> SS
     if (!skip) {
-        skip = changeSuffix(token, "ss", "ss");
+        skip = changeSuffix(rootForm, "ss", "ss");
     }
     // S ->
     if (!skip) {
-        skip = changeSuffix(token, "s", "");
+        skip = changeSuffix(rootForm, "s", "");
     }
 
     ///
@@ -163,28 +160,27 @@ string Word::Stem() {
 
     // (m>0) EED -> EE (ALL CONDITIONS APPLY TO ROOT)
     if (!skip) {
-        skip = changeSuffix(token, "eed", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) { // check root for m > 0
-            token += "eed"; // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "ee");
+        skip = changeSuffix(rootForm, "eed", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) { // check root for m > 0
+            rootForm += "eed"; // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "ee");
         }
     }
     // (*v*) ED ->
     if (!skip) {
-        skip = changeSuffix(token, "ed", "");
-        if (!containsVowel(token) && skip == true) {
-            token += "ed"; // put suffix back to how it was
-        }
-        if (containsVowel(token) && skip) {skip2 = false;}
+        skip = changeSuffix(rootForm, "ed", "");
+        if (!containsVowel(rootForm) && skip == true) {
+            rootForm += "ed"; // put suffix back to how it was
+        } else if (containsVowel(rootForm) && skip) {skip2 = false;}
     }
     // (*v*) ING ->
     if (!skip) {
-        skip = changeSuffix(token, "ing", "");
-        if (!containsVowel(token) && skip == true) {
-            token += "ing"; // put suffix back to how it was
+        skip = changeSuffix(rootForm, "ing", "");
+        if (!containsVowel(rootForm) && skip == true) {
+            rootForm += "ing"; // put suffix back to how it was
         }
-        if (containsVowel(token) && skip) {skip2 = false;}
+        if (containsVowel(rootForm) && skip) {skip2 = false;}
     }
 
     // extra rule if 2nd or 3rd rules applied
@@ -192,28 +188,28 @@ string Word::Stem() {
     if (!skip2) {
         // AT -> ATE
         if (!skip) {
-            skip = changeSuffix(token, "at", "ate");
+            skip = changeSuffix(rootForm, "at", "ate");
         }
         // BL -> BLE
         if (!skip) {
-            skip = changeSuffix(token, "bl", "ble");
+            skip = changeSuffix(rootForm, "bl", "ble");
         }
         // IZ -> IZE
         if (!skip) {
-            skip = changeSuffix(token, "iz", "ize");
+            skip = changeSuffix(rootForm, "iz", "ize");
         }
         // double consonants (not L, S or Z)
         if (!skip) {
-            if (endsWithDoubleConsonant(token) && token[token.length()-1] != 'l' && token[token.length()-1] != 's' && token[token.length()-1] != 'z') {
-                token = token.substr(0, token.length()-1);
+            if (endsWithDoubleConsonant(rootForm) && rootForm[rootForm.length()-1] != 'l' && rootForm[rootForm.length()-1] != 's' && rootForm[rootForm.length()-1] != 'z') {
+                rootForm = rootForm.substr(0, rootForm.length()-1);
                 skip = true;
             }
         }
 
         // (m=1 and *o) -> E
         if (!skip) {
-            if (calculateMeasure(token) == 1 && endsCVC(token)) {
-                token += "e";
+            if (calculateMeasure(rootForm) == 1 && endsCVC(rootForm)) {
+                rootForm += "e";
                 skip = true;
             }
         }
@@ -226,11 +222,12 @@ string Word::Stem() {
 
     // (*v*) Y -> I
     if (!skip) {
-        skip = changeSuffix(token, "y", "i");
-        if (!containsVowel(token) && skip == true) {
-            token += "ing"; // put suffix back to how it was
+        skip = changeSuffix(rootForm, "y", "");
+        if (!containsVowel(rootForm) && skip == true) {
+            changeSuffix(rootForm, "", "y"); // put suffix back to how it was
+        } else if (containsVowel(rootForm) && skip) {
+            changeSuffix(rootForm, "", "i");
         }
-        if (containsVowel(token) && skip) {skip2 = false;}
     }
 
     ///
@@ -240,201 +237,201 @@ string Word::Stem() {
 
     // (m>0) ATIONAL -> ATE
     if (!skip) {
-        skip = changeSuffix(token, "ational", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "ational"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "ate");
+        skip = changeSuffix(rootForm, "ational", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "ational"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "ate");
         }
     }
 
     // (m>0) TIONAL -> TION
     if (!skip) {
-        skip = changeSuffix(token, "tional", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "tional"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "tion");
+        skip = changeSuffix(rootForm, "tional", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "tional"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "tion");
         }
     }
 
     // (m>0) ENCI -> ENCE
     if (!skip) {
-        skip = changeSuffix(token, "enci", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "enci"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "ence");
+        skip = changeSuffix(rootForm, "enci", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "enci"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "ence");
         }
     }
 
     // (m>0) ANCI -> ANCE
     if (!skip) {
-        skip = changeSuffix(token, "anci", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "anci"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "ance");
+        skip = changeSuffix(rootForm, "anci", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "anci"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "ance");
         }
     }
 
     // (m>0) IZER -> IZE
     if (!skip) {
-        skip = changeSuffix(token, "izer", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "izer"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "ize");
+        skip = changeSuffix(rootForm, "izer", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "izer"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "ize");
         }
     }
 
     // (m>0) ABLI -> ABLE
     if (!skip) {
-        skip = changeSuffix(token, "abli", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "abli"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "able");
+        skip = changeSuffix(rootForm, "abli", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "abli"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "able");
         }
     }
 
     // (m>0) ALLI -> AL
     if (!skip) {
-        skip = changeSuffix(token, "alli", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "alli"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "al");
+        skip = changeSuffix(rootForm, "alli", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "alli"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "al");
         }
     }
 
     // (m>0) ENTLI -> ENT
     if (!skip) {
-        skip = changeSuffix(token, "entli", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "entli"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "ent");
+        skip = changeSuffix(rootForm, "entli", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "entli"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "ent");
         }
     }
 
     // (m>0) ELI -> E
     if (!skip) {
-        skip = changeSuffix(token, "eli", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "eli"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "e");
+        skip = changeSuffix(rootForm, "eli", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "eli"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "e");
         }
     }
 
     // (m>0) OUSLI -> OUS
     if (!skip) {
-        skip = changeSuffix(token, "ousli", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "ousli"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "ous");
+        skip = changeSuffix(rootForm, "ousli", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "ousli"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "ous");
         }
     }
 
     // (m>0) IZATION -> IZE
     if (!skip) {
-        skip = changeSuffix(token, "ization", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "ization"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "ize");
+        skip = changeSuffix(rootForm, "ization", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "ization"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "ize");
         }
     }
 
     // (m>0) ATION -> ATE
     if (!skip) {
-        skip = changeSuffix(token, "ation", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "ation"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "ate");
+        skip = changeSuffix(rootForm, "ation", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "ation"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "ate");
         }
     }
 
     // (m>0) ATOR -> ATE
     if (!skip) {
-        skip = changeSuffix(token, "ator", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "ator"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "ate");
+        skip = changeSuffix(rootForm, "ator", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "ator"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "ate");
         }
     }
 
     // (m>0) ALISM -> AL
     if (!skip) {
-        skip = changeSuffix(token, "alism", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "alism"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "al");
+        skip = changeSuffix(rootForm, "alism", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "alism"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "al");
         }
     }
 
     // (m>0) IVENESS -> IVE
     if (!skip) {
-        skip = changeSuffix(token, "iveness", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "iveness"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "ive");
+        skip = changeSuffix(rootForm, "iveness", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "iveness"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "ive");
         }
     }
 
     // (m>0) FULNESS -> FUL
     if (!skip) {
-        skip = changeSuffix(token, "fulness", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "fulness"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "ful");
+        skip = changeSuffix(rootForm, "fulness", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "fulness"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "ful");
         }
     }
 
     // (m>0) OUSNESS -> OUS
     if (!skip) {
-        skip = changeSuffix(token, "ousness", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "ousness"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "ous");
+        skip = changeSuffix(rootForm, "ousness", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "ousness"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "ous");
         }
     }
 
     // (m>0) ALITI -> AL
     if (!skip) {
-        skip = changeSuffix(token, "aliti", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "aliti"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "al");
+        skip = changeSuffix(rootForm, "aliti", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "aliti"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "al");
         }
     }
 
     // (m>0) IVITI -> IVE
     if (!skip) {
-        skip = changeSuffix(token, "iviti", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "iviti"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "ive");
+        skip = changeSuffix(rootForm, "iviti", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "iviti"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "ive");
         }
     }
 
     // (m>0) BILITI -> BLE
     if (!skip) {
-        skip = changeSuffix(token, "biliti", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "biliti"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "ble");
+        skip = changeSuffix(rootForm, "biliti", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "biliti"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "ble");
         }
     }
 
@@ -445,65 +442,65 @@ string Word::Stem() {
 
     // (m>0) ICATE -> IC
     if (!skip) {
-        skip = changeSuffix(token, "icate", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "icate"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "ic");
+        skip = changeSuffix(rootForm, "icate", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "icate"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "ic");
         }
     }
 
     // (m>0) ATIVE ->
     if (!skip) {
-        skip = changeSuffix(token, "ative", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "ative"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "ative", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "ative"); // put suffix back to how it was
         }
     }
 
     // (m>0) ALIZE -> AL
     if (!skip) {
-        skip = changeSuffix(token, "alize", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "alize"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "al");
+        skip = changeSuffix(rootForm, "alize", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "alize"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "al");
         }
     }
 
     // (m>0) ICITI -> IC
     if (!skip) {
-        skip = changeSuffix(token, "iciti", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "iciti"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "ic");
+        skip = changeSuffix(rootForm, "iciti", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "iciti"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "ic");
         }
     }
 
     // (m>0) ICAL -> IC
     if (!skip) {
-        skip = changeSuffix(token, "ical", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "ical"); // put suffix back to how it was
-        } else if (calculateMeasure(token) > 0 && skip == true){
-            changeSuffix(token, "", "ic");
+        skip = changeSuffix(rootForm, "ical", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "ical"); // put suffix back to how it was
+        } else if (calculateMeasure(rootForm) > 0 && skip == true){
+            changeSuffix(rootForm, "", "ic");
         }
     }
 
     // (m>0) FUL ->
     if (!skip) {
-        skip = changeSuffix(token, "ful", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "ful"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "ful", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "ful"); // put suffix back to how it was
         }
     }
 
     // (m>0) NESS ->
     if (!skip) {
-        skip = changeSuffix(token, "ness", "");
-        if (!(calculateMeasure(token) > 0) && skip == true) {
-            changeSuffix(token, "", "ness"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "ness", "");
+        if (!(calculateMeasure(rootForm) > 0) && skip == true) {
+            changeSuffix(rootForm, "", "ness"); // put suffix back to how it was
         }
     }
 
@@ -514,161 +511,161 @@ string Word::Stem() {
 
     // (m>1) AL ->
     if (!skip) {
-        skip = changeSuffix(token, "al", "");
-        if (!(calculateMeasure(token) > 1) && skip == true) {
-            changeSuffix(token, "", "al"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "al", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true) {
+            changeSuffix(rootForm, "", "al"); // put suffix back to how it was
         }
     }
 
     // (m>1) ANCE ->
     if (!skip) {
-        skip = changeSuffix(token, "ance", "");
-        if (!(calculateMeasure(token) > 1) && skip == true) {
-            changeSuffix(token, "", "ance"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "ance", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true) {
+            changeSuffix(rootForm, "", "ance"); // put suffix back to how it was
         }
     }
 
     // (m>1) ENCE ->
     if (!skip) {
-        skip = changeSuffix(token, "ence", "");
-        if (!(calculateMeasure(token) > 1) && skip == true) {
-            changeSuffix(token, "", "ence"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "ence", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true) {
+            changeSuffix(rootForm, "", "ence"); // put suffix back to how it was
         }
     }
 
     // (m>1) ENCE ->
     if (!skip) {
-        skip = changeSuffix(token, "ence", "");
-        if (!(calculateMeasure(token) > 1) && skip == true) {
-            changeSuffix(token, "", "ence"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "ence", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true) {
+            changeSuffix(rootForm, "", "ence"); // put suffix back to how it was
         }
     }
 
     // (m>1) ER ->
     if (!skip) {
-        skip = changeSuffix(token, "er", "");
-        if (!(calculateMeasure(token) > 1) && skip == true) {
-            changeSuffix(token, "", "er"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "er", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true) {
+            changeSuffix(rootForm, "", "er"); // put suffix back to how it was
         }
     }
 
     // (m>1) IC ->
     if (!skip) {
-        skip = changeSuffix(token, "ic", "");
-        if (!(calculateMeasure(token) > 1) && skip == true) {
-            changeSuffix(token, "", "ic"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "ic", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true) {
+            changeSuffix(rootForm, "", "ic"); // put suffix back to how it was
         }
     }
 
     // (m>1) ABLE ->
     if (!skip) {
-        skip = changeSuffix(token, "able", "");
-        if (!(calculateMeasure(token) > 1) && skip == true) {
-            changeSuffix(token, "", "able"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "able", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true) {
+            changeSuffix(rootForm, "", "able"); // put suffix back to how it was
         }
     }
 
     // (m>1) IBLE ->
     if (!skip) {
-        skip = changeSuffix(token, "ible", "");
-        if (!(calculateMeasure(token) > 1) && skip == true) {
-            changeSuffix(token, "", "ible"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "ible", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true) {
+            changeSuffix(rootForm, "", "ible"); // put suffix back to how it was
         }
     }
 
     // (m>1) ANT ->
     if (!skip) {
-        skip = changeSuffix(token, "ant", "");
-        if (!(calculateMeasure(token) > 1) && skip == true) {
-            changeSuffix(token, "", "ant"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "ant", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true) {
+            changeSuffix(rootForm, "", "ant"); // put suffix back to how it was
         }
     }
 
     // (m>1) EMENT ->
     if (!skip) {
-        skip = changeSuffix(token, "ement", "");
-        if (!(calculateMeasure(token) > 1) && skip == true) {
-            changeSuffix(token, "", "ement"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "ement", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true) {
+            changeSuffix(rootForm, "", "ement"); // put suffix back to how it was
         }
     }
 
     // (m>1) MENT ->
     if (!skip) {
-        skip = changeSuffix(token, "ment", "");
-        if (!(calculateMeasure(token) > 1) && skip == true) {
-            changeSuffix(token, "", "ment"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "ment", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true) {
+            changeSuffix(rootForm, "", "ment"); // put suffix back to how it was
         }
     }
 
     // (m>1) ENT ->
     if (!skip) {
-        skip = changeSuffix(token, "ent", "");
-        if (!(calculateMeasure(token) > 1) && skip == true) {
-            changeSuffix(token, "", "ent"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "ent", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true) {
+            changeSuffix(rootForm, "", "ent"); // put suffix back to how it was
         }
     }
 
     // (m>1 and (*S or *T)) ION ->
     if (!skip) {
-        skip = changeSuffix(token, "ion", "");
-        if (!(calculateMeasure(token) > 1) && skip == true && !(token[token.length()-1] == 's' or token[token.length()-1] == 't')) {
-            changeSuffix(token, "", "ion"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "ion", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true && !(rootForm[rootForm.length()-1] == 's' or rootForm[rootForm.length()-1] == 't')) {
+            changeSuffix(rootForm, "", "ion"); // put suffix back to how it was
         }
     }
 
     // (m>1) OU ->
     if (!skip) {
-        skip = changeSuffix(token, "ou", "");
-        if (!(calculateMeasure(token) > 1) && skip == true) {
-            changeSuffix(token, "", "ou"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "ou", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true) {
+            changeSuffix(rootForm, "", "ou"); // put suffix back to how it was
         }
     }
 
     // (m>1) ISM ->
     if (!skip) {
-        skip = changeSuffix(token, "ism", "");
-        if (!(calculateMeasure(token) > 1) && skip == true) {
-            changeSuffix(token, "", "ism"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "ism", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true) {
+            changeSuffix(rootForm, "", "ism"); // put suffix back to how it was
         }
     }
 
     // (m>1) ATE ->
     if (!skip) {
-        skip = changeSuffix(token, "ate", "");
-        if (!(calculateMeasure(token) > 1) && skip == true) {
-            changeSuffix(token, "", "ate"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "ate", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true) {
+            changeSuffix(rootForm, "", "ate"); // put suffix back to how it was
         }
     }
 
     // (m>1) ITI ->
     if (!skip) {
-        skip = changeSuffix(token, "iti", "");
-        if (!(calculateMeasure(token) > 1) && skip == true) {
-            changeSuffix(token, "", "iti"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "iti", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true) {
+            changeSuffix(rootForm, "", "iti"); // put suffix back to how it was
         }
     }
 
     // (m>1) OUS ->
     if (!skip) {
-        skip = changeSuffix(token, "ous", "");
-        if (!(calculateMeasure(token) > 1) && skip == true) {
-            changeSuffix(token, "", "ous"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "ous", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true) {
+            changeSuffix(rootForm, "", "ous"); // put suffix back to how it was
         }
     }
 
     // (m>1) IVE ->
     if (!skip) {
-        skip = changeSuffix(token, "ive", "");
-        if (!(calculateMeasure(token) > 1) && skip == true) {
-            changeSuffix(token, "", "ive"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "ive", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true) {
+            changeSuffix(rootForm, "", "ive"); // put suffix back to how it was
         }
     }
 
     // (m>1) IZE ->
     if (!skip) {
-        skip = changeSuffix(token, "ize", "");
-        if (!(calculateMeasure(token) > 1) && skip == true) {
-            changeSuffix(token, "", "ize"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "ize", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true) {
+            changeSuffix(rootForm, "", "ize"); // put suffix back to how it was
         }
     }
 
@@ -679,18 +676,18 @@ string Word::Stem() {
 
     // (m>1) E ->
     if (!skip) {
-        skip = changeSuffix(token, "e", "");
-        if (!(calculateMeasure(token) > 1) && skip == true) {
-            changeSuffix(token, "", "e"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "e", "");
+        if (!(calculateMeasure(rootForm) > 1) && skip == true) {
+            changeSuffix(rootForm, "", "e"); // put suffix back to how it was
             skip = false;
         }
     }
 
     // (m=1 and not *o) E ->
     if (!skip) {
-        skip = changeSuffix(token, "e", "");
-        if (calculateMeasure(token) == 1 && endsCVC(token) && skip == true) {
-            changeSuffix(token, "", "e"); // put suffix back to how it was
+        skip = changeSuffix(rootForm, "e", "");
+        if (!(calculateMeasure(rootForm) == 1 && !endsCVC(rootForm)) && skip == true) {
+            changeSuffix(rootForm, "", "e"); // put suffix back to how it was
         }
     }
 
@@ -698,10 +695,8 @@ string Word::Stem() {
     ///
 
     // m > 1 and double consonants and L
-    if (calculateMeasure(token) > 1 && endsWithDoubleConsonant(token) && token[token.length()-1] == 'l') {
-        token = token.substr(0, token.length()-1);
+    if (calculateMeasure(rootForm) > 1 && endsWithDoubleConsonant(rootForm) && rootForm[rootForm.length()-1] == 'l') {
+        rootForm = rootForm.substr(0, rootForm.length()-1);
     }
-
-    cout << token << endl;
     return rootForm;
 }

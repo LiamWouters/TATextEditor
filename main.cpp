@@ -5,7 +5,7 @@
 using namespace std;
 
 int main() {
-    string filename = "stemming.txt";
+    string filename = "Tokenization1.txt";
 
     Text text;
     text.Tokenize(filename);

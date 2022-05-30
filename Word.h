@@ -26,6 +26,7 @@ public:
     Word(const string &token);
 
     string getString();
+    string getRoot();
     void setSpecialChar();
     bool isSpecialChar();
     void setAbbreviation();
