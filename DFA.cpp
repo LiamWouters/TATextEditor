@@ -899,3 +899,69 @@ vector<tuple<string, string, bool>> DFA::getTable() {
     }
     return table;
 }
+
+void DFA::fileToDFA(string filename) {
+    ifstream file;
+    file.open(filename);
+
+    alphabet = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
+    tuple<string, bool, bool> startState = tuple<string,bool,bool> ("starting", true, false);
+    states.push_back(startState);
+    string line;
+    getline(file,line);
+    line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+    string stateName;
+    for (int i = 0; i < line.size(); ++i) {
+        if (i == line.size()-1) {
+            auto finalState = tuple<string,bool,bool> (stateName + line[i], false, true);
+            states.push_back(finalState);
+            auto transition = tuple<string,string,string> (stateName,stateName + line[i], string(1,line[i]));
+            transitions.push_back(transition);
+        }
+        else if (i == 0) {
+            auto state = tuple<string,bool,bool> (stateName + line[i], false, false);
+            states.push_back(state);
+            auto transition = tuple<string,string,string> ("starting",stateName + line[i], string(1,line[i]));
+            transitions.push_back(transition);
+        }
+        else {
+            auto state = tuple<string,bool,bool> (stateName + line[i], false, false);
+            states.push_back(state);
+            auto transition = tuple<string,string,string> (stateName,stateName + line[i], string(1,line[i]));
+            transitions.push_back(transition);
+        }
+        stateName += line[i];
+    }
+   string previousWord = stateName;
+    while (getline(file, line)) {
+        line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+        string nameCheck = stateName;
+        stateName = "";
+        int begin = 0;
+        while (nameCheck[begin] == line[begin]) {
+            stateName += nameCheck[begin];
+            begin++;
+        }
+        for (int i = begin; i < line.size(); i++) {
+            if (i == line.size()-1) {
+                auto finalState = tuple<string,bool,bool> (stateName + line[i], false, true);
+                states.push_back(finalState);
+                auto transition = tuple<string,string,string> (stateName,stateName + line[i], string(1,line[i]));
+                transitions.push_back(transition);
+            }
+            else if (i == 0) {
+                auto state = tuple<string,bool,bool> (stateName + line[i], false, false);
+                states.push_back(state);
+                auto transition = tuple<string,string,string> ("starting",stateName + line[i], string(1,line[i]));
+                transitions.push_back(transition);
+            }
+            else {
+                auto state = tuple<string,bool,bool> (stateName + line[i], false, false);
+                states.push_back(state);
+                auto transition = tuple<string,string,string> (stateName,stateName + line[i], string(1,line[i]));
+                transitions.push_back(transition);
+            }
+            stateName += line[i];
+        }
+    }
+}

@@ -56,6 +56,8 @@ public:
     const vector<string> &getAlphabet() const;
 
     void setAlphabet(const vector<string> &alphabet);
+
+    void fileToDFA(string);
 };
 
 
