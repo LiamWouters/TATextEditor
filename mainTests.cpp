@@ -376,7 +376,36 @@ TEST(Stemming, happy_day) {
 }
 
 TEST(Stemming, sad_day) {
-    // waar het fout gaat, woorden die compleet niet bij elkaar horen worden samen gerangschikt enzo
-    EXPECT_TRUE(false);
+    /// Overstemming examples
+    Word wo = Word("generous");
+    EXPECT_EQ("gener", wo.getRoot());
+    Word wo1 = Word("general");
+    EXPECT_EQ("gener", wo1.getRoot());
+        // they both stem to "gener" even though they mean completely different things
+
+    Word wo2 = Word("university");
+    EXPECT_EQ("univers", wo2.getRoot());
+    Word wo3 = Word("universe");
+    EXPECT_EQ("univers", wo3.getRoot());
+    Word wo4 = Word("universal");
+    EXPECT_EQ("univers", wo4.getRoot());
+
+
+    /// Understemming examples
+    Word wu = Word("bought");
+    EXPECT_EQ("bought", wu.getRoot());
+    Word wu1 = Word("buy");
+    EXPECT_EQ("bui", wu1.getRoot());
+
+    Word wu2 = Word("does");
+    EXPECT_EQ("doe", wu2.getRoot());
+    Word wu3 = Word("do");
+    EXPECT_EQ("do", wu3.getRoot());
+
+    Word wu4 = Word("data"); // information
+    EXPECT_EQ("data", wu4.getRoot());
+    Word wu5 = Word("datum"); // in english datum = single piece of information
+    EXPECT_EQ("datum", wu5.getRoot());
+    // they should both be stemmed to "dat" because they mean the same thing
 }
 ////////////////////
