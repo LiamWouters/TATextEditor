@@ -409,3 +409,8 @@ TEST(Stemming, sad_day) {
     // they should both be stemmed to "dat" because they mean the same thing
 }
 ////////////////////
+///// N-grams //////
+TEST(NGrams, happy_day) {}
+
+TEST(NGrams, sad_day) {}
+////////////////////

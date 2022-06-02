@@ -195,6 +195,99 @@ void Text::addSentence(Sentence* s) {
     sentences.push_back(s);
 }
 
+vector<pair<string, int>> Text::createNgram(int n, string word) {
+    // We will check all encounters in the text for the given word and check which words come before and after it most often
+    // the number n(-1) represents the amount of words saved and checked next to the word
+    // example: n == 2, word = "quick":
+    // the QUICK BROWN fox  -> Brown is added to the dictionary with value 1 (amount of times found next to word)
+    // THE QUICK brown fox  -> The is added to the dictionary with value 1 (amount of times found next to word)
+
+    /// Return a vector containing a pair of the biggest word before and after,
+    /// example: {("biggestBefore", amount), ("biggestAfter", amount)}
+
+    map<string, int> wordsBefore = {};
+    map<string, int> wordsAfter = {};
+
+    /// check for all encounters of the word
+    for (Sentence* sentence : sentences) {
+        for (int i = 0; i < sentence->getWords().size(); i++) {
+            Word* w = sentence->getWords()[i];
+            if (w->getString() == word) {
+                vector<Word*> bWords = {};
+                vector<Word*> aWords = {};
+                for (int j = 1; j < n; j++) {
+                    // gather before words
+                    if ((i-j) >= 0) {
+                        if (!sentence->getWords()[i-j]->isSpecialChar()) { // if its a ',' you can ignore it (also the words before it because it should have no relevance to the word)
+                            //cout << "Before: " << sentence->getWords()[i - j]->getString() << endl;
+                            bWords.push_back(sentence->getWords()[i - j]);
+                        }
+                    }
+
+                    // gather after words;
+                    if ((i+j) < sentence->getWords().size()) {
+                        if (!sentence->getWords()[i+j]->isSpecialChar()) {
+                            //cout << "After: " << sentence->getWords()[i + j]->getString() << endl;
+                            aWords.push_back(sentence->getWords()[i + j]);
+                        }
+                    }
+                }
+                // if awords, bwords do not contain n-1 words, don't add
+                if (bWords.size() == n-1) {
+                    string key = "";
+                    for (int i = 0; i < bWords.size(); i++) {key += bWords[i]->getString(); if (i != bWords.size()-1) {key += " ";}} // i use this key because for some reason when using the vector<Word*> as key it doesn't work
+                    auto it = wordsBefore.find(key);
+                    if (it != wordsBefore.end()) {
+                        // word already exists in map
+                        it->second += 1;
+                    } else {
+                        pair<string, int> p = {key, 1};
+                        wordsBefore.emplace(p);
+                    }
+                }
+                if (aWords.size() == n-1) {
+                    string key = "";
+                    for (int i = 0; i < aWords.size(); i++) {key += aWords[i]->getString(); if (i != aWords.size()-1) {key += " ";}} // i use this key because for some reason when using the vector<Word*> as key it doesn't work
+                    auto it = wordsAfter.find(key);
+                    if (it != wordsAfter.end()) {
+                        // word already exists in map
+                        it->second += 1;
+                    } else {
+                        pair<string, int> p = {key, 1};
+                        wordsAfter.emplace(p);
+                    }
+                }
+            }
+        }
+    }
+    if (true == true) {
+        /// print for debug ///
+        for (auto it = wordsBefore.begin(); it != wordsBefore.end(); it++) {
+            cout << "Before: " << it->first << " | " << it->second << endl;
+        }
+
+        for (auto it = wordsAfter.begin(); it != wordsAfter.end(); it++) {
+            cout << "After: " << it->first << " | " << it->second << endl;
+        }
+        //////////////////////
+    }
+
+    pair<string, int> biggestBefore = {"", 0};
+    pair<string, int> biggestAfter = {"", 0};
+    for (auto it = wordsBefore.begin(); it != wordsBefore.end(); it++) {
+        if (it->second > biggestBefore.second) {
+            biggestBefore = *it;
+        }
+    }
+    for (auto it = wordsAfter.begin(); it != wordsAfter.end(); it++) {
+        if (it->second > biggestAfter.second) {
+            biggestAfter = *it;
+        }
+    }
+    vector<pair<string, int>> biggest = {biggestBefore, biggestAfter};
+    return biggest;
+}
+
 Text::~Text() {
     for (Sentence* s : sentences) {
         delete s;

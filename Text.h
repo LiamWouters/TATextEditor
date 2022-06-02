@@ -11,6 +11,7 @@ using namespace std;
 
 class DFA;
 class Sentence;
+class Word;
 
 class Text {
 private:
@@ -31,6 +32,8 @@ public:
 
     const vector<Sentence *> &getSentences() const;
     void addSentence(Sentence* s);
+
+    vector<pair<string, int>> createNgram(int n, string word);
 
     virtual ~Text();
 };
