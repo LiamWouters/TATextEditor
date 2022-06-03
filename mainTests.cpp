@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
     printf("\nTime elapsed: %.5f\n", elapsed);
     return returnv;
 }
-
+/*
 /// Tokenization ///
 TEST(Tokenization, happyDay) {
     Text* text = new Text();
@@ -120,7 +120,7 @@ TEST(Tokenization, RandgevalTripleDot) {
     EXPECT_EQ("...", text.getSentences()[2]->getWord(26)->getString()); // not caught as triple dot but caught the ',' after it
     EXPECT_TRUE(text.getSentences()[2]->getWord(27)->isSpecialChar());
     EXPECT_EQ(",", text.getSentences()[2]->getWord(27)->getString());
-}
+}*/
 ////////////////////
 ///// Stemming /////
 TEST(Stemming, happy_day) {
@@ -410,7 +410,38 @@ TEST(Stemming, sad_day) {
 }
 ////////////////////
 ///// N-grams //////
-TEST(NGrams, happy_day) {}
+TEST(NGrams, happy_day) {
+    Text t;
+    t.Tokenize("GlobalWarming-vs-ClimateChange-NASA.txt");
+    // de expected values zijn geteld
+    vector<pair<vector<string>,int>> biggest = t.createNgram(0, "global");
+    pair<vector<string>, int> empty = {{""},0};
+    EXPECT_EQ(empty, biggest[0]); EXPECT_EQ(empty, biggest[1]);
 
-TEST(NGrams, sad_day) {}
+    biggest = t.createNgram(1, "global");
+    EXPECT_EQ(empty, biggest[0]); EXPECT_EQ(empty, biggest[1]);
+
+    biggest = t.createNgram(2, "global");
+    pair<vector<string>, int> before2 = {{"and", "as", "earth's"}, 2};
+    pair<vector<string>, int> b2 = {{"and", "as", "earth\xE2\x80\x99s"}, 2};
+    pair<vector<string>, int> after2 = {{"warming"}, 4};
+    EXPECT_TRUE((before2 == biggest[0]) or (b2 == biggest[0]));
+    EXPECT_EQ(after2, biggest[1]);
+
+    biggest = t.createNgram(3, "global");
+    pair<vector<string>, int> before3 = {{"change and", "in earth's", "increased earth's", "or even", "regional and", "such as", "to as", "what is"}, 1};
+    pair<vector<string>, int> b3 = {{"change and", "in earth\xE2\x80\x99s", "increased earth\xE2\x80\x99s", "or even", "regional and", "such as", "to as", "what is"}, 1};
+    pair<vector<string>, int> after3 = {{"average of", "average temperature", "land and", "surface temperature", "warming are", "warming is"}, 1};
+    EXPECT_TRUE((before3 == biggest[0]) or (b3 == biggest[0]));
+    EXPECT_EQ(after3, biggest[1]);
+}
+
+TEST(NGrams, Randgeval) {
+    // woord dat niet bestaat
+    Text t;
+    t.Tokenize("GlobalWarming-vs-ClimateChange-NASA.txt");
+    vector<pair<vector<string>,int>> biggest = t.createNgram(0, "globale");
+    pair<vector<string>, int> empty = {{""},0};
+    EXPECT_EQ(empty, biggest[0]); EXPECT_EQ(empty, biggest[1]);
+}
 ////////////////////

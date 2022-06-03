@@ -99,11 +99,18 @@ bool Word::endsCVC(string word) {
 Word::Word(const string &token) : token(token) {
     specialChar = false;
     abbreviation = false;
+    startquote = false;
+    endquote = false;
     root = Stem();
 }
 
 string Word::getString() {
     return token;
+}
+
+void Word::setString(string t) {
+    token = t;
+    root = Stem();
 }
 
 string Word::getRoot() {
@@ -124,6 +131,22 @@ void Word::setAbbreviation() {
 
 bool Word::isAbbreviation() {
     return abbreviation;
+}
+
+void Word::setStartQuote() {
+    startquote = true;
+}
+
+bool Word::isStartQuote() {
+    return startquote;
+}
+
+void Word::setEndQuote() {
+    endquote = true;
+}
+
+bool Word::isEndQuote() {
+    return endquote;
 }
 
 string Word::Stem() {

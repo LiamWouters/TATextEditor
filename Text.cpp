@@ -108,20 +108,32 @@ void Text::Tokenize(string filename) {
         /// (special) Functionality:
         // check voor "..." (niet persee einde zin)
         // check voor vb: "Dr."
+        // check voor quotationmarks
         ///
+
+        Word* newWord = new Word(token);
+        if (token.back() == '\"' or token.back() == '\235') {
+            token = token.substr(0, token.size()-1);
+            newWord->setString(token);
+            newWord->setEndQuote();
+        }
+        if (token.front() == '\"' or token.front() == '\342') {
+            token = token.substr(1, token.size());
+            newWord->setString(token);
+            newWord->setStartQuote();
+        }
 
         if (token.back() == '.' or token.back() == '!' or token.back() == '?') {
             if (token.back() == '.' && abbreviationDFA->accepts(token)) {
-                Word *w = new Word(token);
-                w->setAbbreviation();
-                sentence->addWord(w);
+                newWord->setAbbreviation();
+                sentence->addWord(newWord);
             } else {
                 // check for "..."
                 if (token.find("...") != string::npos) {
                     // split triple dot from string (if there is more to the string)
                     if (token != "...") {
-                        Word *w = new Word(token.substr(0, token.size()-3));
-                        sentence->addWord(w);
+                        newWord->setString(token.substr(0, token.size()-3));
+                        sentence->addWord(newWord);
                     }
                     Word *tripleDot = new Word(token.substr(token.size()-3, token.size()));
                     tripleDot->setSpecialChar();
@@ -132,8 +144,16 @@ void Text::Tokenize(string filename) {
                 punctMark->setSpecialChar();
                 token = token.substr(0, token.size() - 1);
                 if (token != "") {
-                    Word *w = new Word(token);
-                    sentence->addWord(w);
+                    if (token.back() == '\"' or token.back() == '\235') {
+                        token = token.substr(0, token.size()-1);
+                        newWord->setEndQuote();
+                    }
+                    if (token.front() == '\"' or token.front() == '\342') {
+                        token = token.substr(1, token.size()-1);
+                        newWord->setStartQuote();
+                    }
+                    newWord->setString(token);
+                    sentence->addWord(newWord);
                 }
                 sentence->addWord(punctMark);
 
@@ -152,29 +172,37 @@ void Text::Tokenize(string filename) {
             if (token.find("...") != string::npos) {
                 // split triple dot from string (if there is more to the string)
                 if (token != "...") {
-                    Word *w = new Word(token.substr(0, token.size()-3));
-                    sentence->addWord(w);
+                    newWord->setString(token.substr(0, token.size()-3));
+                    sentence->addWord(newWord);
                 }
                 Word *tripleDot = new Word(token.substr(token.size()-3, token.size()));
                 tripleDot->setSpecialChar();
                 sentence->addWord(tripleDot); sentence->addWord(comma);
                 continue;
             }
+            // check for quotes again
+            if (token.back() == '\"' or token.back() == '\235') {
+                token = token.substr(0, token.size()-1);
+                newWord->setString(token);
+                newWord->setEndQuote();
+            }
+            if (token.front() == '\"' or token.front() == '\342') {
+                token = token.substr(1, token.size()-1);
+                newWord->setString(token);
+                newWord->setStartQuote();
+            }
             if (token != "") {
-                Word *w = new Word(token);
+                newWord->setString(token);
                 if (abbreviationDFA->accepts(token)) {
-                    w->setAbbreviation();
+                    newWord->setAbbreviation();
                 }
-                sentence->addWord(w);
+                sentence->addWord(newWord);
             }
             sentence->addWord(comma);
         }
-        //else if (token.back() == '"') {
-
-        //}
         else {
-            Word* w = new Word(token);
-            sentence->addWord(w);
+            newWord->setString(token);
+            sentence->addWord(newWord);
         }
     }
     // if the text doesn't end with a '.'
@@ -195,15 +223,19 @@ void Text::addSentence(Sentence* s) {
     sentences.push_back(s);
 }
 
-vector<pair<string, int>> Text::createNgram(int n, string word) {
+vector<pair<vector<string>, int>> Text::createNgram(int n, string word) {
     // We will check all encounters in the text for the given word and check which words come before and after it most often
     // the number n(-1) represents the amount of words saved and checked next to the word
     // example: n == 2, word = "quick":
     // the QUICK BROWN fox  -> Brown is added to the dictionary with value 1 (amount of times found next to word)
     // THE QUICK brown fox  -> The is added to the dictionary with value 1 (amount of times found next to word)
 
-    /// Return a vector containing a pair of the biggest word before and after,
-    /// example: {("biggestBefore", amount), ("biggestAfter", amount)}
+    /// Return a vector containing a pair of the biggest words before and after,
+    /// example: {({"biggestBefore"}, amount), ({"biggestAfter"}, amount)}
+    /// example: if there are 2 or more "biggestBefores" with the same amount
+    ///         -> {({"biggestBefore1", "biggestBefore2"}, amount), ({"biggestAfter"}, amount)}
+
+    if (n < 2) {return {{{""}, 0},{{""}, 0}};}
 
     map<string, int> wordsBefore = {};
     map<string, int> wordsAfter = {};
@@ -220,7 +252,7 @@ vector<pair<string, int>> Text::createNgram(int n, string word) {
                     if ((i-j) >= 0) {
                         if (!sentence->getWords()[i-j]->isSpecialChar()) { // if its a ',' you can ignore it (also the words before it because it should have no relevance to the word)
                             //cout << "Before: " << sentence->getWords()[i - j]->getString() << endl;
-                            bWords.push_back(sentence->getWords()[i - j]);
+                            bWords.insert(bWords.begin(), sentence->getWords()[i - j]);
                         }
                     }
 
@@ -260,7 +292,7 @@ vector<pair<string, int>> Text::createNgram(int n, string word) {
             }
         }
     }
-    if (true == true) {
+    if (true == false) {
         /// print for debug ///
         for (auto it = wordsBefore.begin(); it != wordsBefore.end(); it++) {
             cout << "Before: " << it->first << " | " << it->second << endl;
@@ -272,19 +304,27 @@ vector<pair<string, int>> Text::createNgram(int n, string word) {
         //////////////////////
     }
 
-    pair<string, int> biggestBefore = {"", 0};
-    pair<string, int> biggestAfter = {"", 0};
+    pair<vector<string>, int> biggestBefore = {{""}, 0};
+    pair<vector<string>, int> biggestAfter = {{""}, 0};
     for (auto it = wordsBefore.begin(); it != wordsBefore.end(); it++) {
         if (it->second > biggestBefore.second) {
-            biggestBefore = *it;
+            biggestBefore.second = it->second;
+            biggestBefore.first = {it->first};
+        }
+        else if (it->second == biggestBefore.second) {
+            biggestBefore.first.push_back(it->first);
         }
     }
     for (auto it = wordsAfter.begin(); it != wordsAfter.end(); it++) {
         if (it->second > biggestAfter.second) {
-            biggestAfter = *it;
+            biggestAfter.second = it->second;
+            biggestAfter.first = {it->first};
+        }
+        else if (it->second == biggestAfter.second) {
+            biggestAfter.first.push_back(it->first);
         }
     }
-    vector<pair<string, int>> biggest = {biggestBefore, biggestAfter};
+    vector<pair<vector<string>, int>> biggest = {biggestBefore, biggestAfter};
     return biggest;
 }
 
