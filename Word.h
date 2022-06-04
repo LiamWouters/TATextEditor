@@ -12,10 +12,14 @@ class Word {
 private:
     string token;
     string root;
-
     bool abbreviation; // is een afkorting vb: "Dr."
     bool startquote; // token bevat eigenlijk een '"' voor de string
     bool endquote; // token bevat eigenlijk een '"' na de string
+    bool highlight; // als het true is moet het gefluoriseerd worden in de html.
+    string replace;
+
+
+private:
     bool isVowel(char* c);
     bool isConsonant(string word, int index);
     bool changeSuffix(string& word, string S1, string S2);
@@ -23,6 +27,7 @@ private:
     bool containsVowel(string word);
     bool endsWithDoubleConsonant(string word);
     bool endsCVC(string word);
+
 public:
     Word(const string &token);
 
@@ -36,6 +41,11 @@ public:
     bool isStartQuote();
     void setEndQuote();
     bool isEndQuote();
+    bool isHighlight() const;
+    void setHighlight(bool highlight);
+    const string &getReplace() const;
+    void setReplace(const string &replace);
+
 
     string Stem();
 };
