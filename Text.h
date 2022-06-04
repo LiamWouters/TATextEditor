@@ -28,6 +28,9 @@ private:
     void makeAbbreviationsAutomata();
     void checkToken(string token, DFA* abbreviationsDFA);
 public:
+    /*
+     *
+     */
     void Tokenize(string filename);
 
     const vector<Sentence *> &getSentences() const;

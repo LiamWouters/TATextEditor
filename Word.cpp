@@ -97,7 +97,6 @@ bool Word::endsCVC(string word) {
 /// Public Functions ///
 
 Word::Word(const string &token) : token(token) {
-    specialChar = false;
     abbreviation = false;
     startquote = false;
     endquote = false;
@@ -117,12 +116,8 @@ string Word::getRoot() {
     return root;
 }
 
-void Word::setSpecialChar() {
-    specialChar = true;
-}
-
 bool Word::isSpecialChar() {
-    return specialChar;
+    return false;
 }
 
 void Word::setAbbreviation() {

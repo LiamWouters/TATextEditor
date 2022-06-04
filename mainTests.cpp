@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
     printf("\nTime elapsed: %.5f\n", elapsed);
     return returnv;
 }
-/*
+
 /// Tokenization ///
 TEST(Tokenization, happyDay) {
     Text* text = new Text();
@@ -120,7 +120,7 @@ TEST(Tokenization, RandgevalTripleDot) {
     EXPECT_EQ("...", text.getSentences()[2]->getWord(26)->getString()); // not caught as triple dot but caught the ',' after it
     EXPECT_TRUE(text.getSentences()[2]->getWord(27)->isSpecialChar());
     EXPECT_EQ(",", text.getSentences()[2]->getWord(27)->getString());
-}*/
+}
 ////////////////////
 ///// Stemming /////
 TEST(Stemming, happy_day) {

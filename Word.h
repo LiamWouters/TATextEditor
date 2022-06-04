@@ -13,7 +13,6 @@ private:
     string token;
     string root;
 
-    bool specialChar; // is een special character: punt, komma, ...
     bool abbreviation; // is een afkorting vb: "Dr."
     bool startquote; // token bevat eigenlijk een '"' voor de string
     bool endquote; // token bevat eigenlijk een '"' na de string
@@ -30,8 +29,7 @@ public:
     string getString();
     void setString(string t);
     string getRoot();
-    void setSpecialChar();
-    bool isSpecialChar();
+    virtual bool isSpecialChar();
     void setAbbreviation();
     bool isAbbreviation();
     void setStartQuote();

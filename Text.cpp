@@ -9,6 +9,7 @@
 #include "Text.h"
 #include "Sentence.h"
 #include "Word.h"
+#include "SpecialCharacter.h"
 
 #include "DFA.h"
 #include "NFA.h"
@@ -135,13 +136,11 @@ void Text::Tokenize(string filename) {
                         newWord->setString(token.substr(0, token.size()-3));
                         sentence->addWord(newWord);
                     }
-                    Word *tripleDot = new Word(token.substr(token.size()-3, token.size()));
-                    tripleDot->setSpecialChar();
+                    SpecialCharacter *tripleDot = new SpecialCharacter(token.substr(token.size()-3, token.size()));
                     sentence->addWord(tripleDot);
                     continue;
                 }
-                Word *punctMark = new Word(token.substr(token.size() - 1));
-                punctMark->setSpecialChar();
+                SpecialCharacter *punctMark = new SpecialCharacter(token.substr(token.size() - 1));
                 token = token.substr(0, token.size() - 1);
                 if (token != "") {
                     if (token.back() == '\"' or token.back() == '\235') {
@@ -165,8 +164,7 @@ void Text::Tokenize(string filename) {
         else if (token.back() == ',') {
             // split off comma as a seperate word (punctuation = true).
             token = token.substr(0, token.size()-1);
-            Word* comma = new Word(",");
-            comma->setSpecialChar();
+            SpecialCharacter* comma = new SpecialCharacter(",");
 
             // check for abbreviation and ... again
             if (token.find("...") != string::npos) {
@@ -175,8 +173,7 @@ void Text::Tokenize(string filename) {
                     newWord->setString(token.substr(0, token.size()-3));
                     sentence->addWord(newWord);
                 }
-                Word *tripleDot = new Word(token.substr(token.size()-3, token.size()));
-                tripleDot->setSpecialChar();
+                SpecialCharacter *tripleDot = new SpecialCharacter(token.substr(token.size()-3, token.size()));
                 sentence->addWord(tripleDot); sentence->addWord(comma);
                 continue;
             }

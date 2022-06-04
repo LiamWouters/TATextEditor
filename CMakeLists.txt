@@ -20,7 +20,8 @@ set(RELEASE_SOURCE_FILES main.cpp
         json.hpp
         NFA.h  NFA.cpp
         RE.h  RE.cpp
-)
+        SpecialCharacter.h SpecialCharacter.cpp
+        )
 
 # Set source files for DEBUG target
 set(DEBUG_SOURCE_FILES mainTests.cpp
@@ -32,7 +33,8 @@ set(DEBUG_SOURCE_FILES mainTests.cpp
         json.hpp
         NFA.h  NFA.cpp
         RE.h  RE.cpp
-)
+        SpecialCharacter.h SpecialCharacter.cpp
+        )
 
 # Create RELEASE target
 add_executable(TATextEditor ${RELEASE_SOURCE_FILES})
