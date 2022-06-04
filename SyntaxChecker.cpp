@@ -7,7 +7,7 @@
 #include <string>
 #include <algorithm>
 #include <map>
-#include "../taTEST/RE.h"
+#include <fstream>
 
 using namespace std;
 
@@ -65,6 +65,8 @@ bool SyntaxChecker::validJson(string jsonFileString){
     string onlySyntaxSymbols;
     bool firstNumber = true;
     bool betweenQuotations = false;
+    bool startedWithSquareBracket = false;
+    bool closedJson = false;
     pair<char, char> beforeAndAfterQuotes;
     pair<char, char> beforeAndAfterNumber;
     for(auto j: readInput){
@@ -182,6 +184,11 @@ bool SyntaxChecker::validJson(string jsonFileString){
         // Left accolade, should be preceded by: nothing (if first accolade), [, or a comma.
         // It should be followed by a quotation mark or '}'.
         else if(j == '{' && !betweenQuotations){
+            if(closedJson){
+                cout << "Error found on line " + to_string(currentLine) + ":" << endl;
+                cout << "Invalid: Json was already fully closed, check your accolades." << endl;
+                return false;
+            }
             onlySyntaxSymbols += j;
             accoladeStack += 1;
             addedOpenings.emplace_back("{");
@@ -213,6 +220,9 @@ bool SyntaxChecker::validJson(string jsonFileString){
             onlySyntaxSymbols += j;
             accoladeStack -= 1;
             addedOpenings.pop_back();
+            if(accoladeStack == 0){
+                closedJson = true;
+            }
             if(accoladeStack < 0){
                 cout << "Error found on line " + to_string(currentLine) + ":" << endl;
                 cout << R"(Error: '}' doesn't have a corresponding '{')" << endl;
@@ -250,6 +260,14 @@ bool SyntaxChecker::validJson(string jsonFileString){
             onlySyntaxSymbols += j;
             squareBracketStack += 1;
             addedOpenings.emplace_back("[");
+            if(addedOpenings.size() == 1){
+                startedWithSquareBracket = true;
+            }
+            if(startedWithSquareBracket && closedJson){
+                cout << "Error found on line " + to_string(currentLine) + ":" << endl;
+                cout << "Invalid: \'[\' found but Json was already closed, check your brackets." << endl;
+                return false;
+            }
             int k = index-1;
             int l = index+1;
             while(readInput[k] == ' ' || readInput[k] == '\n'){
@@ -257,6 +275,10 @@ bool SyntaxChecker::validJson(string jsonFileString){
             }
             while(readInput[l] == ' ' || readInput[l] == '\n'){
                 l += 1;
+            }
+            if(k == -1){
+                index += 1;
+                continue;
             }
             if(readInput[k] != ':' && readInput[k] != ','){
                 cout << "Error found on line " + to_string(currentLine) + ":" << endl;
@@ -276,6 +298,9 @@ bool SyntaxChecker::validJson(string jsonFileString){
             onlySyntaxSymbols += j;
             squareBracketStack -= 1;
             addedOpenings.pop_back();
+            if(squareBracketStack == 0 && startedWithSquareBracket){
+                closedJson = true;
+            }
             if(squareBracketStack < 0){
                 cout << "Error found on line " + to_string(currentLine) + ":" << endl;
                 cout << R"(Error: ']' doesn't have a corresponding '[')" << endl;
@@ -288,6 +313,10 @@ bool SyntaxChecker::validJson(string jsonFileString){
             }
             while(readInput[l] == ' ' || readInput[l] == '\n'){
                 l += 1;
+            }
+            if(l == readInput.size()){
+                index += 1;
+                continue;
             }
             if(readInput[k] != '[' && readInput[k] != ']' && readInput[k] != '}' && readInput[k] != 'e' && readInput[k] != 'l' && readInput[k] != '\"' && find(numbersChar.begin(), numbersChar.end(), readInput[k]) == numbersChar.end()){
                 cout << "Error found on line " + to_string(currentLine) + ":" << endl;
@@ -711,15 +740,15 @@ bool SyntaxChecker::validHTML(const string &htmlFile) {
             int k = j+1;
             int beginQuote = 0;
             int beginQuoteIndex;
-            char beginQuotation;
+            char beginQuotation = '\0';
             int endQuote = 0;
-            char endQuotation;
+            char endQuotation = '\0';
             vector<pair<int, int>> quotationIndexPairs;
 
             // Bool to keep track of when a double break is needed.
             bool doubleBreak = false;
 
-            while(html[k] != '>'){
+            while(html[k] != '>' || insideQuotations){
                 // Check every character on the path.
                 string currentChar(1, html[k]);
                 // Reached end of string? No tag.
@@ -744,6 +773,10 @@ bool SyntaxChecker::validHTML(const string &htmlFile) {
                 }
                 // Space case, these are only allowed under certain conditions.
                 if(html[k] == ' '){
+                    if(insideQuotations){
+                        newTag += ' ';
+                        k += 1;
+                    }
                     int l = k+1;
                     int n = l;
                     bool textBefore = false;

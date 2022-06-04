@@ -2,9 +2,11 @@
 #include "Text.h"
 #include "Sentence.h"
 #include "Word.h"
+#include "SyntaxChecker.h"
 using namespace std;
 
 int main() {
+
     string filename = "GlobalWarming-vs-ClimateChange-NASA.txt";
 
     Text text;
@@ -15,4 +17,5 @@ int main() {
     cout << biggest[1].first << " -> " << biggest[1].second << endl;
 
     return 0;
+
 };

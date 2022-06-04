@@ -7,6 +7,7 @@
 #include "Text.h"
 #include "Sentence.h"
 #include "Word.h"
+#include "SyntaxChecker.h"
 using namespace std;
 
 int main(int argc, char** argv) {
@@ -22,6 +23,8 @@ int main(int argc, char** argv) {
 }
 
 /// Tokenization ///
+
+
 TEST(Tokenization, happyDay) {
     Text* text = new Text();
     text->Tokenize("TokenizationHappyDay.txt");
@@ -121,6 +124,7 @@ TEST(Tokenization, RandgevalTripleDot) {
     EXPECT_TRUE(text.getSentences()[2]->getWord(27)->isSpecialChar());
     EXPECT_EQ(",", text.getSentences()[2]->getWord(27)->getString());
 }
+
 ////////////////////
 ///// Stemming /////
 TEST(Stemming, happy_day) {
@@ -408,6 +412,8 @@ TEST(Stemming, sad_day) {
     EXPECT_EQ("datum", wu5.getRoot());
     // they should both be stemmed to "dat" because they mean the same thing
 }
+
+
 ////////////////////
 ///// N-grams //////
 TEST(NGrams, happy_day) {
@@ -445,3 +451,72 @@ TEST(NGrams, Randgeval) {
     EXPECT_EQ(empty, biggest[0]); EXPECT_EQ(empty, biggest[1]);
 }
 ////////////////////
+
+
+TEST(JSON, chaotic){
+    SyntaxChecker s;
+    testing::internal::CaptureStdout();
+    cout << s.validJson("chaotic.json");
+    EXPECT_TRUE(s.validJson("chaotic.json"));
+    string outPut = testing::internal::GetCapturedStdout();
+}
+
+TEST(JSON, weirdValue){
+    testing::internal::CaptureStdout();
+    SyntaxChecker s;
+    EXPECT_FALSE(s.validJson("weirdValue.json"));
+    string outPut = testing::internal::GetCapturedStdout();
+    EXPECT_TRUE(outPut.find("Error found on line") != string::npos);
+    EXPECT_TRUE(outPut.find("Invalid value") != string::npos);
+    EXPECT_TRUE(outPut.find("value should be an integer, double, bool or null.") != string::npos);
+}
+
+TEST(JSON, justAList){
+    SyntaxChecker s;
+    testing::internal::CaptureStdout();
+    cout << s.validJson("justAList.json");
+    EXPECT_TRUE(s.validJson("justAList.json"));
+    string outPut = testing::internal::GetCapturedStdout();
+}
+
+TEST(JSON, oddBackslash){
+    testing::internal::CaptureStdout();
+    SyntaxChecker s;
+    EXPECT_FALSE(s.validJson("oddBackSlash.json"));
+    string outPut = testing::internal::GetCapturedStdout();
+    EXPECT_TRUE(outPut.find("Error with string value:") != string::npos);
+    EXPECT_TRUE(outPut.find("Invalid: Argument has odd amount of consecutive backslashes inside of it") != string::npos);
+}
+
+TEST(HTML, halfBody){
+    testing::internal::CaptureStdout();
+    SyntaxChecker s;
+    EXPECT_FALSE(s.validHTML("onlyHalfABody.html"));
+    string outPut = testing::internal::GetCapturedStdout();
+    EXPECT_TRUE(outPut.find("Invalid: Endtag missing for:") != string::npos);
+}
+
+TEST(HTML, tagCorrect){
+    testing::internal::CaptureStdout();
+    SyntaxChecker s;
+    EXPECT_TRUE(s.validHTML("tagCorrect.html"));
+    string outPut = testing::internal::GetCapturedStdout();
+}
+
+TEST(HTML, endTagAttribute){
+    testing::internal::CaptureStdout();
+    SyntaxChecker s;
+    EXPECT_FALSE(s.validHTML("endTagAttribute.html"));
+    string outPut = testing::internal::GetCapturedStdout();
+    EXPECT_TRUE(outPut.find("Invalid: Endtag at line") != string::npos);
+    EXPECT_TRUE(outPut.find("contains potential attribute, put it in the opening tag.") != string::npos);
+}
+
+TEST(HTML, invalidTag){
+    testing::internal::CaptureStdout();
+    SyntaxChecker s;
+    EXPECT_FALSE(s.validHTML("invalidTag.html"));
+    string outPut = testing::internal::GetCapturedStdout();
+    EXPECT_TRUE(outPut.find("Invalid space usage in tag on line") != string::npos);
+    EXPECT_TRUE(outPut.find("Remove the space or add a proper attribute.") != string::npos);
+}

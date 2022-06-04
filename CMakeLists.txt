@@ -21,6 +21,7 @@ set(RELEASE_SOURCE_FILES main.cpp
         NFA.h  NFA.cpp
         RE.h  RE.cpp
         SpecialCharacter.h SpecialCharacter.cpp
+        SyntaxChecker.cpp SyntaxChecker.h
         )
 
 # Set source files for DEBUG target
@@ -34,6 +35,7 @@ set(DEBUG_SOURCE_FILES mainTests.cpp
         NFA.h  NFA.cpp
         RE.h  RE.cpp
         SpecialCharacter.h SpecialCharacter.cpp
+        SyntaxChecker.cpp SyntaxChecker.h
         )
 
 # Create RELEASE target
