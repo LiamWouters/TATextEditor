@@ -34,7 +34,12 @@ public:
     void Tokenize(string filename);
 
     const vector<Sentence *> &getSentences() const;
+
     void addSentence(Sentence* s);
+
+    void Find(string filename, const string& search);
+
+    void Replace(string filename,const  string& search, const string& replace);
 
     vector<pair<vector<string>, int>> createNgram(int n, string word);
 

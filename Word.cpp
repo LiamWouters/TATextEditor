@@ -718,3 +718,19 @@ string Word::Stem() {
     }
     return rootForm;
 }
+
+bool Word::isHighlight() const {
+    return highlight;
+}
+
+void Word::setHighlight(bool highlight) {
+    Word::highlight = highlight;
+}
+
+const string &Word::getReplace() const {
+    return replace;
+}
+
+void Word::setReplace(const string &replace) {
+    Word::replace = replace;
+}

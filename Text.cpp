@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include <utility>
 #include "Text.h"
 #include "Sentence.h"
 #include "Word.h"
@@ -328,5 +329,31 @@ vector<pair<vector<string>, int>> Text::createNgram(int n, string word) {
 Text::~Text() {
     for (Sentence* s : sentences) {
         delete s;
+    }
+}
+void Text::Find(string filename, const string& search) {
+    Text text;
+    text.Tokenize(std::move(filename));
+    for (auto zin:text.sentences) {
+        for(auto woord:zin->getWords()){
+            if (woord->getString()==search){
+                woord->setHighlight(true);
+            }
+            else{
+                woord->setHighlight(false);
+            }
+        }
+    }
+}
+
+void Text::Replace(string filename,const  string& search, const string& replace) {
+    Text text;
+    text.Tokenize(std::move(filename));
+    for (auto zin:text.sentences) {
+        for(auto woord:zin->getWords()){
+            if (woord->getString()==search){
+                woord->setReplace(replace);
+            }
+        }
     }
 }
