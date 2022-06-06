@@ -58,6 +58,11 @@ public:
     void setAlphabet(const vector<string> &alphabet);
 
     void fileToDFA(string);
+
+    vector<string> spellingCheck(string);
+
+    void spellingCheckRecursion(string, vector<pair<string, int>>&, const tuple<string,
+            bool, bool>& = tuple<string, bool, bool> ("False", false, false), int = 0, int = 0, int = 0);
 };
 
 
