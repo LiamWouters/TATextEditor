@@ -3,6 +3,7 @@
 //
 
 #include "DFA.h"
+#include "Text.h"
 
 DFA::DFA() {
 
@@ -966,7 +967,7 @@ void DFA::fileToDFA(string filename) {
     }
 }
 
-vector<string> DFA::spellingCheck(string input) {
+vector<string> DFA::spellingCheck(string input, string before, string after,Text text) {
     vector<string> finalReplacements;
     vector<pair<string,int>> replacements;
     tuple<string,bool,bool> currentState ("starting", true, false);
@@ -1034,6 +1035,29 @@ vector<string> DFA::spellingCheck(string input) {
             }
             bool added = false;
             for (auto replacement:replacements) {
+                if (finalReplacements.size() >= 5) {
+                    break;
+                }
+                vector<pair<vector<string>,int>> ngram;
+                ngram = text.createNgram(2,replacement.first);
+                for (auto i:ngram[0].first) {
+                    if (i == before) {
+                        finalReplacements.push_back(replacement.first);
+                    }
+                }
+                if (finalReplacements.size() >= 5) {
+                    break;
+                }
+                for (auto i:ngram[1].first) {
+                    if (i == after) {
+                        finalReplacements.push_back(replacement.first);
+                    }
+                }
+            }
+            for (auto replacement:replacements) {
+                if (finalReplacements.size() >= 5) {
+                    break;
+                }
                 if (replacement.second == 1) {
                     added = false;
                     for (auto repl:finalReplacements) {
@@ -1176,8 +1200,7 @@ void DFA::spellingCheckRecursion(string input, vector<pair<string, int>> & repla
                     replacements.emplace_back(get<0>(currentState),distance);
                 }
 
-                if(distance == 1 and get<0>(currentState) == "thankfull") {
-                    int sd = 5;
+                if(distance == 1) {
                     transitioned = false;
                     for (auto s:alphabet) {
                         if (transitioned) {
@@ -1238,3 +1261,35 @@ void DFA::spellingCheckRecursion(string input, vector<pair<string, int>> & repla
         }
     }
 }
+
+//vector<string> DFA::spellingCheckNgram(string input, pair<vector<string>, int> before, pair<vector<string>, int> after) {
+//    vector<string> tempReplacement;
+//    vector<string> finalReplacement;
+//    tempReplacement = spellingCheck(input);
+//    for (auto ngram:before.first) {
+//            for (auto word:tempReplacement) {
+//                if (word == ngram) {
+//                    finalReplacement.push_back(word);
+//                }
+//            }
+//    }
+//    for (auto ngram:after.first) {
+//            for (auto word:tempReplacement) {
+//                if (word == ngram) {
+//                    finalReplacement.push_back(word);
+//                }
+//            }
+//    }
+//    bool added = false;
+//    for (auto word:tempReplacement) {
+//        for (auto final:finalReplacement) {
+//            if (final == word) {
+//                added = true;
+//            }
+//        }
+//        if (!added) {
+//            finalReplacement.push_back(word);
+//        }
+//    }
+//    return finalReplacement;
+//}
