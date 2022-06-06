@@ -967,10 +967,11 @@ void DFA::fileToDFA(string filename) {
     }
 }
 
-vector<string> DFA::spellingCheck(string input, string before, string after,Text text) {
+vector<string> DFA::spellingCheck(string input, string before, string after,Text& text, int distance) {
     vector<string> finalReplacements;
     vector<pair<string,int>> replacements;
-    tuple<string,bool,bool> currentState ("starting", true, false);
+    tuple<string,bool,bool> starting ("starting", true, false);
+    tuple<string,bool,bool> currentState  = starting;
     int inputIndex = -1;
     int transitionIndex = -1;
     vector<tuple<string,bool,bool>> allStates;
@@ -1022,14 +1023,44 @@ vector<string> DFA::spellingCheck(string input, string before, string after,Text
 //            Als de transitie niet bestaat roep je spellingCheck opnieuw aan en return je alle gevonden replacements
 //            op volgorde van edit distance tot een maximum aantal replacements van 5.
         if (!transitionExists) {
-            while (replacements.size() < 5 and inputIndex >= 0) {
+            while (replacements.size() < 5 and inputIndex >= 1) {
                 string newInput = "";
                 for (int j = inputIndex; j < input.size(); ++j) {
                     newInput += input[j];
                 }
                 spellingCheckRecursion(newInput, replacements,
                                        allStates[inputIndex-1],transitionPosition[inputIndex-1],
-                                       statePosition[inputIndex-1],1);
+                                       statePosition[inputIndex-1],distance+1);
+                if (distance == 0) {
+                    vector<string> words;
+                    for (auto l:alphabet) {
+                        words = spellingCheck(l+input,before,after,text,1);
+                        bool in = false;
+                        for (auto word:words) {
+                            for (auto repl:replacements) {
+                                if (word == repl.first) {
+                                    in = true;
+                                }
+                            }
+                            if (!in) {
+                                int dis = 1;
+                                if (word.size() == input.size()+1) {
+                                    for (int i = 1; i < word.size(); ++i) {
+                                        char test1 = word[i];
+                                        char test2 = input[i-1];
+                                        if (word[i] != input[i-1]) {
+                                            dis = 2;
+                                        }
+                                    }
+                                }
+                                else {
+                                    dis = 2;
+                                }
+                                replacements.emplace_back(pair<string,int> (word,dis));
+                            }
+                        }
+                    }
+                }
     //                Voeg de eerste vijf gevonden replacements met één edit distance toe aan de vector die ge-returned wordt
                 inputIndex--;
             }
@@ -1041,7 +1072,7 @@ vector<string> DFA::spellingCheck(string input, string before, string after,Text
                 vector<pair<vector<string>,int>> ngram;
                 ngram = text.createNgram(2,replacement.first);
                 for (auto i:ngram[0].first) {
-                    if (i == before) {
+                    if (i == before and before  != "") {
                         finalReplacements.push_back(replacement.first);
                     }
                 }
@@ -1049,7 +1080,7 @@ vector<string> DFA::spellingCheck(string input, string before, string after,Text
                     break;
                 }
                 for (auto i:ngram[1].first) {
-                    if (i == after) {
+                    if (i == after and after != "") {
                         finalReplacements.push_back(replacement.first);
                     }
                 }
@@ -1095,6 +1126,10 @@ vector<string> DFA::spellingCheck(string input, string before, string after,Text
             return finalReplacements;
         }
     }
+    if (get<2>(currentState)) {
+        return {get<0>(currentState)};
+    }
+    return {};
 }
 
 void DFA::spellingCheckRecursion(string input, vector<pair<string, int>> & replacements,
@@ -1261,35 +1296,3 @@ void DFA::spellingCheckRecursion(string input, vector<pair<string, int>> & repla
         }
     }
 }
-
-//vector<string> DFA::spellingCheckNgram(string input, pair<vector<string>, int> before, pair<vector<string>, int> after) {
-//    vector<string> tempReplacement;
-//    vector<string> finalReplacement;
-//    tempReplacement = spellingCheck(input);
-//    for (auto ngram:before.first) {
-//            for (auto word:tempReplacement) {
-//                if (word == ngram) {
-//                    finalReplacement.push_back(word);
-//                }
-//            }
-//    }
-//    for (auto ngram:after.first) {
-//            for (auto word:tempReplacement) {
-//                if (word == ngram) {
-//                    finalReplacement.push_back(word);
-//                }
-//            }
-//    }
-//    bool added = false;
-//    for (auto word:tempReplacement) {
-//        for (auto final:finalReplacement) {
-//            if (final == word) {
-//                added = true;
-//            }
-//        }
-//        if (!added) {
-//            finalReplacement.push_back(word);
-//        }
-//    }
-//    return finalReplacement;
-//}
