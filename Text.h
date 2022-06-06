@@ -15,6 +15,7 @@ class Word;
 
 class Text {
 private:
+    Text* _initCheck;
     vector<Sentence*> sentences;
 
     /*
@@ -29,20 +30,43 @@ private:
     void checkToken(string token, DFA* abbreviationsDFA);
 public:
     /*
-     *
+     * ENSURE(properlyInitialized(), "constructor must end in properlyInitialized state");
+     */
+    Text();
+
+    /***/
+    bool properlyInitialized();
+
+    /*
+     * REQUIRE(properlyInitialized(), "Text wasn't initialized when calling Tokenize()");
      */
     void Tokenize(string filename);
 
-    const vector<Sentence *> &getSentences() const;
+    /*
+     * REQUIRE(properlyInitialized(), "Text wasn't initialized when calling getSentences()");
+     */
+    const vector<Sentence *> &getSentences();
 
+    /*
+     * REQUIRE(properlyInitialized(), "Text wasn't initialized when calling addSentence()");
+     * ENSURE(sentences[sentences.size()-1] == s, "The last sentence in the vector is s");
+     */
     void addSentence(Sentence* s);
 
+    /***/
     void Find(string filename, const string& search);
 
+    /***/
     void Replace(string filename,const  string& search, const string& replace);
 
+    /*
+     * REQUIRE(properlyInitialized(), "Text wasn't initialized when calling createNgram()");
+     */
     vector<pair<vector<string>, int>> createNgram(int n, string word);
 
+    /*
+     *
+     */
     virtual ~Text();
 };
 

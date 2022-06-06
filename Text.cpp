@@ -44,7 +44,18 @@ void Text::makeAbbreviationsAutomata() {
 ////////////////////////
 /// Public functions ///
 
+Text::Text() {
+    _initCheck = this;
+    ENSURE(properlyInitialized(), "constructor must end in properlyInitialized state");
+}
+
+bool Text::properlyInitialized() {
+    return _initCheck == this;
+}
+
+
 void Text::Tokenize(string filename) {
+    REQUIRE(properlyInitialized(), "Text wasn't initialized when calling Tokenize()");
     ifstream file;
     file.open(filename);
 
@@ -208,20 +219,26 @@ void Text::Tokenize(string filename) {
     auto it = find(sentences.begin(), sentences.end(), sentence);
     if (it == sentences.end() && sentence->size() != 0) {
         sentences.push_back(sentence);
+    } else if (it == sentences.end() && sentence->size() == 0) {
+        delete sentence;
     }
     delete abbreviationDFA;
     file.close();
 }
 
-const vector<Sentence *> &Text::getSentences() const {
+const vector<Sentence *> &Text::getSentences() {
+    REQUIRE(properlyInitialized(), "Text wasn't initialized when calling getSentences()");
     return sentences;
 }
 
 void Text::addSentence(Sentence* s) {
+    REQUIRE(properlyInitialized(), "Text wasn't initialized when calling addSentence()");
     sentences.push_back(s);
+    ENSURE(sentences[sentences.size()-1] == s, "The last sentence in the vector is s");
 }
 
 vector<pair<vector<string>, int>> Text::createNgram(int n, string word) {
+    REQUIRE(properlyInitialized(), "Text wasn't initialized when calling createNgram()");
     // We will check all encounters in the text for the given word and check which words come before and after it most often
     // the number n(-1) represents the amount of words saved and checked next to the word
     // example: n == 2, word = "quick":
@@ -326,11 +343,6 @@ vector<pair<vector<string>, int>> Text::createNgram(int n, string word) {
     return biggest;
 }
 
-Text::~Text() {
-    for (Sentence* s : sentences) {
-        delete s;
-    }
-}
 void Text::Find(string filename, const string& search) {
     Text text;
     text.Tokenize(std::move(filename));
@@ -356,4 +368,13 @@ void Text::Replace(string filename,const  string& search, const string& replace)
             }
         }
     }
+}
+
+Text::~Text() {
+    REQUIRE(properlyInitialized(), "Text wasn't initialized when calling Destructor");
+    for (Sentence* s : sentences) {
+        delete s;
+    }
+    sentences.clear();
+    ENSURE(sentences.empty(), "No remaining sentences");
 }

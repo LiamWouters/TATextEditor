@@ -6,10 +6,12 @@
 #define TATEXTEDITOR_WORD_H
 
 #include <iostream>
+#include "DesignByContract.h"
 using namespace std;
 
 class Word {
 private:
+    Word* _initCheck;
     string token;
     string root;
     bool abbreviation; // is een afkorting vb: "Dr."
@@ -18,8 +20,6 @@ private:
     bool highlight; // als het true is moet het gefluoriseerd worden in de html.
     string replace;
 
-
-private:
     bool isVowel(char* c);
     bool isConsonant(string word, int index);
     bool changeSuffix(string& word, string S1, string S2);
@@ -28,26 +28,96 @@ private:
     bool endsWithDoubleConsonant(string word);
     bool endsCVC(string word);
 
+    void Stem();
 public:
+    /*
+     * ENSURE(properlyInitialized(), "constructor must end in properlyInitialized state");
+     */
     Word(const string &token);
 
+    /***/
+    bool properlyInitialized();
+
+    /*
+     * REQUIRE(properlyInitialized(), "Word wasn't initialized when calling getString()");
+     */
     string getString();
+
+    /*
+     * REQUIRE(properlyInitialized(), "Word wasn't initialized when calling setString()");
+     * ENSURE(token == t, "token changed to new value");
+     */
     void setString(string t);
+
+    /*
+     * REQUIRE(properlyInitialized(), "Word wasn't initialized when calling getRoot()");
+     */
     string getRoot();
+
+    /*
+     * REQUIRE(properlyInitialized(), "Word wasn't initialized when calling isSpecialChar()");
+     */
     virtual bool isSpecialChar();
+
+    /*
+     * REQUIRE(properlyInitialized(), "Word wasn't initialized when calling setAbbreviation()");
+     * ENSURE(abbreviation == true, "Word is an abbreviation");
+     */
     void setAbbreviation();
+
+    /*
+     * REQUIRE(properlyInitialized(), "Word wasn't initialized when calling isAbbreviation()");
+     */
     bool isAbbreviation();
+
+    /*
+     * REQUIRE(properlyInitialized(), "Word wasn't initialized when calling setStartQuote()");
+     * ENSURE(startQuote == true, "Word is the start of a quote");
+     */
     void setStartQuote();
+
+    /*
+     * REQUIRE(properlyInitialized(), "Word wasn't initialized when calling isStartQuote()");
+     */
     bool isStartQuote();
+
+    /*
+     * REQUIRE(properlyInitialized(), "Word wasn't initialized when calling setEndQuote()");
+     * ENSURE(endquote == true, "Word is the end of a quote");
+     */
     void setEndQuote();
+
+    /*
+     * REQUIRE(properlyInitialized(), "Word wasn't initialized when calling isEndQuote()");
+     */
     bool isEndQuote();
-    bool isHighlight() const;
-    void setHighlight(bool highlight);
-    const string &getReplace() const;
-    void setReplace(const string &replace);
 
+    /*
+     * REQUIRE(properlyInitialized(), "Word wasn't initialized when calling isHighlight()");
+     */
+    bool isHighlight();
 
-    string Stem();
+    /*
+     * REQUIRE(properlyInitialized(), "Word wasn't initialized when calling setHighlight()");
+     * ENSURE(highlight == h, "Highlight now contains the correct value");
+     */
+    void setHighlight(bool h);
+
+    /*
+     * REQUIRE(properlyInitialized(), "Word wasn't initialized when calling getReplace()");
+     */
+    const string &getReplace();
+
+    /*
+     * REQUIRE(properlyInitialized(), "Word wasn't initialized when calling setReplace()");
+     * ENSURE(replace == r, "Replace now contains the correct value");
+     */
+    void setReplace(const string &r);
+
+    /*
+     * REQUIRE(properlyInitialized(), "Word wasn't initialized when calling destructor");
+     */
+    virtual ~Word();
 };
 
 #endif //TATEXTEDITOR_WORD_H

@@ -93,58 +93,7 @@ bool Word::endsCVC(string word) {
     return false;
 }
 
-/////////////////////////
-/// Public Functions ///
-
-Word::Word(const string &token) : token(token) {
-    abbreviation = false;
-    startquote = false;
-    endquote = false;
-    root = Stem();
-}
-
-string Word::getString() {
-    return token;
-}
-
-void Word::setString(string t) {
-    token = t;
-    root = Stem();
-}
-
-string Word::getRoot() {
-    return root;
-}
-
-bool Word::isSpecialChar() {
-    return false;
-}
-
-void Word::setAbbreviation() {
-    abbreviation = true;
-}
-
-bool Word::isAbbreviation() {
-    return abbreviation;
-}
-
-void Word::setStartQuote() {
-    startquote = true;
-}
-
-bool Word::isStartQuote() {
-    return startquote;
-}
-
-void Word::setEndQuote() {
-    endquote = true;
-}
-
-bool Word::isEndQuote() {
-    return endquote;
-}
-
-string Word::Stem() {
+void Word::Stem() {
     /*
      * The porter algorithm for suffix trimming (stemming)
      * source: http://facweb.cs.depaul.edu/mobasher/classes/csc575/papers/porter-algorithm.html
@@ -716,21 +665,104 @@ string Word::Stem() {
     if (calculateMeasure(rootForm) > 1 && endsWithDoubleConsonant(rootForm) && rootForm[rootForm.length()-1] == 'l') {
         rootForm = rootForm.substr(0, rootForm.length()-1);
     }
-    return rootForm;
+    root = rootForm;
 }
 
-bool Word::isHighlight() const {
+/////////////////////////
+/// Public Functions ///
+
+Word::Word(const string &token) : token(token) {
+    abbreviation = false;
+    startquote = false;
+    endquote = false;
+    highlight = false;
+    Stem();
+    replace = "";
+    _initCheck = this;
+    ENSURE(properlyInitialized(), "constructor must end in properlyInitialized state");
+}
+
+bool Word::properlyInitialized() {
+    return _initCheck == this;
+}
+
+string Word::getString() {
+    REQUIRE(properlyInitialized(), "Word wasn't initialized when calling getString()");
+    return token;
+}
+
+void Word::setString(string t) {
+    REQUIRE(properlyInitialized(), "Word wasn't initialized when calling setString()");
+    token = t;
+    Stem();
+    ENSURE(token == t, "token changed to new value");
+}
+
+string Word::getRoot() {
+    REQUIRE(properlyInitialized(), "Word wasn't initialized when calling getRoot()");
+    return root;
+}
+
+bool Word::isSpecialChar() {
+    REQUIRE(properlyInitialized(), "Word wasn't initialized when calling isSpecialChar()");
+    return false;
+}
+
+void Word::setAbbreviation() {
+    REQUIRE(properlyInitialized(), "Word wasn't initialized when calling setAbbreviation()");
+    abbreviation = true;
+    ENSURE(abbreviation == true, "Word is an abbreviation");
+}
+
+bool Word::isAbbreviation() {
+    REQUIRE(properlyInitialized(), "Word wasn't initialized when calling isAbbreviation()");
+    return abbreviation;
+}
+
+void Word::setStartQuote() {
+    REQUIRE(properlyInitialized(), "Word wasn't initialized when calling setStartQuote()");
+    startquote = true;
+    ENSURE(startquote == true, "Word is the start of a quote");
+}
+
+bool Word::isStartQuote() {
+    REQUIRE(properlyInitialized(), "Word wasn't initialized when calling isStartQuote()");
+    return startquote;
+}
+
+void Word::setEndQuote() {
+    REQUIRE(properlyInitialized(), "Word wasn't initialized when calling setEndQuote()");
+    endquote = true;
+    ENSURE(endquote == true, "Word is the end of a quote");
+}
+
+bool Word::isEndQuote() {
+    REQUIRE(properlyInitialized(), "Word wasn't initialized when calling isEndQuote()");
+    return endquote;
+}
+
+bool Word::isHighlight() {
+    REQUIRE(properlyInitialized(), "Word wasn't initialized when calling isHighlight()");
     return highlight;
 }
 
-void Word::setHighlight(bool highlight) {
-    Word::highlight = highlight;
+void Word::setHighlight(bool h) {
+    REQUIRE(properlyInitialized(), "Word wasn't initialized when calling setHighlight()");
+    highlight = h;
+    ENSURE(highlight == h, "Highlight now contains the correct value");
 }
 
-const string &Word::getReplace() const {
+const string &Word::getReplace() {
+    REQUIRE(properlyInitialized(), "Word wasn't initialized when calling getReplace()");
     return replace;
 }
 
-void Word::setReplace(const string &replace) {
-    Word::replace = replace;
+void Word::setReplace(const string &r) {
+    REQUIRE(properlyInitialized(), "Word wasn't initialized when calling setReplace()");
+    replace = r;
+    ENSURE(replace == r, "Replace now contains the correct value");
+}
+
+Word::~Word() {
+    REQUIRE(properlyInitialized(), "Word wasn't initialized when calling destructor");
 }

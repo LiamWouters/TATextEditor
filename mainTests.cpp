@@ -24,7 +24,6 @@ int main(int argc, char** argv) {
 
 /// Tokenization ///
 
-
 TEST(Tokenization, happyDay) {
     Text* text = new Text();
     text->Tokenize("TokenizationHappyDay.txt");

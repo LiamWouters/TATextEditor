@@ -12,6 +12,7 @@ link_directories(gtest/lib)
 
 # Set source files for RELEASE target
 set(RELEASE_SOURCE_FILES main.cpp
+        DesignByContract.h
         Text.h  Text.cpp
         Sentence.h  Sentence.cpp
         Word.h  Word.cpp
@@ -26,6 +27,7 @@ set(RELEASE_SOURCE_FILES main.cpp
 
 # Set source files for DEBUG target
 set(DEBUG_SOURCE_FILES mainTests.cpp
+        DesignByContract.h
         Text.h  Text.cpp
         Sentence.h  Sentence.cpp
         Word.h  Word.cpp

@@ -9,10 +9,25 @@
 
 class SpecialCharacter : public Word {
 private:
-
+    SpecialCharacter* _initCheck;
 public:
+    /*
+     * ENSURE(properlyInitialized(), "constructor must end in properlyInitialized state");
+     */
     SpecialCharacter(const string &token);
+
+    /***/
+    bool properlyInitialized();
+
+    /*
+     * REQUIRE(properlyInitialized(), "SpecialCharacter wasn't initialized when calling isSpecialChar()");
+     */
     bool isSpecialChar();
+
+    /*
+     * REQUIRE(properlyInitialized(), "SpecialCharacter wasn't initialized when calling destructor");
+     */
+    virtual ~SpecialCharacter();
 };
 
 #endif //TATEXTEDITOR_SPECIALCHARACTER_H
