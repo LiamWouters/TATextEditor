@@ -72,9 +72,9 @@ public:
 
     /*
      * REQUIRE(properlyInitialized(), "Word wasn't initialized when calling setStartQuote()");
-     * ENSURE(startQuote == true, "Word is the start of a quote");
+     * ENSURE(startQuote == true, "value of startquote equals given value");
      */
-    void setStartQuote();
+    void setStartQuote(bool b);
 
     /*
      * REQUIRE(properlyInitialized(), "Word wasn't initialized when calling isStartQuote()");
@@ -83,9 +83,9 @@ public:
 
     /*
      * REQUIRE(properlyInitialized(), "Word wasn't initialized when calling setEndQuote()");
-     * ENSURE(endquote == true, "Word is the end of a quote");
+     * ENSURE(endquote == true, "value of endquote equals given value");
      */
-    void setEndQuote();
+    void setEndQuote(bool b);
 
     /*
      * REQUIRE(properlyInitialized(), "Word wasn't initialized when calling isEndQuote()");

@@ -66,51 +66,12 @@ void Text::Tokenize(string filename) {
     if (!abbreviation) {makeAbbreviationsAutomata();}
     abbreviation.close();
     DFA* abbreviationDFA = new DFA ("../SavedAutomata/AbbreviationsDFA.json");
-    /*
-    cout << boolalpha << abbreviationDFA->accepts("abbrev.") << endl; // should all be true
-    cout << boolalpha << abbreviationDFA->accepts("abd.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("capt.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("cartogr.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("catal.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("catech.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("cath.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("cent.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("cent.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("ceram.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("cert.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("certif.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("cf.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("ch.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("chamb.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("char.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("charac.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("chas.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("chem.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("chesh.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("ch.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("chr.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("chr.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("chron.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("chron.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("chronol.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("chrons.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("cinematogr.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("circ.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("civ.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("cl.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("cl.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("class.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("class.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("classif.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("climatol.") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("climatl.") << endl; // from here should be false
-    cout << boolalpha << abbreviationDFA->accepts(".") << endl;
-    cout << boolalpha << abbreviationDFA->accepts("") << endl;
-    */
 
     while (!file.eof()) {
         string token;
         file >> token;
+        int insertSkip = 0; // insert at position sentence[sentence.size() - insertSkip];
+        bool sentenceOver = false;
 
         // turn all characters to lowercase
         for (char& c : token) {
@@ -122,96 +83,96 @@ void Text::Tokenize(string filename) {
         // check voor "..." (niet persee einde zin)
         // check voor vb: "Dr."
         // check voor quotationmarks
+        // split off special characters: ".", "!", "?", ",", ";", ":", "()", "[]", "{}"
         ///
 
         Word* newWord = new Word(token);
         if (token.back() == '\"' or token.back() == '\235') {
             token = token.substr(0, token.size()-1);
             newWord->setString(token);
-            newWord->setEndQuote();
+            newWord->setEndQuote(true);
         }
         if (token.front() == '\"' or token.front() == '\342') {
             token = token.substr(1, token.size());
             newWord->setString(token);
-            newWord->setStartQuote();
+            newWord->setStartQuote(true);
         }
 
-        if (token.back() == '.' or token.back() == '!' or token.back() == '?') {
+        while (token.front() == '(' or token.front() == '[' or token.front() == '{') {
+            string specC = "";
+            specC += token[0];
+            SpecialCharacter* SC = new SpecialCharacter(specC);
+            sentence->addWord(SC);
+            token = token.substr(1,token.size());
+        }
+
+        while (token.back() == '.' or token.back() == '!' or token.back() == '?' or token.back() == ',' or token.back() == ';' or token.back() == ':' or token.back() == ')' or token.back() == ']' or token.back() == '}') {
             if (token.back() == '.' && abbreviationDFA->accepts(token)) {
                 newWord->setAbbreviation();
                 sentence->addWord(newWord);
+                insertSkip = -1;
+                break;
             } else {
+                insertSkip += 1;
                 // check for "..."
                 if (token.find("...") != string::npos) {
-                    // split triple dot from string (if there is more to the string)
-                    if (token != "...") {
-                        newWord->setString(token.substr(0, token.size()-3));
-                        sentence->addWord(newWord);
+                    if (token.substr(token.size()-3, token.size()) == "...") { // specifically at the end
+                        // split triple dot from string (if there is more to the string)
+                        SpecialCharacter *tripleDot = new SpecialCharacter(
+                                token.substr(token.size() - 3, token.size()));
+                        token = (token.substr(0, token.size() - 3));
+                        if (token == "") {
+                            if (newWord->isEndQuote()) {
+                                tripleDot->setEndQuote(true);
+                            }
+                            if (newWord->isStartQuote()) {
+                                tripleDot->setStartQuote(true);
+                            }
+                        }
+                        sentence->insertWord(tripleDot, sentence->size() - insertSkip + 1);
+                        continue;
                     }
-                    SpecialCharacter *tripleDot = new SpecialCharacter(token.substr(token.size()-3, token.size()));
-                    sentence->addWord(tripleDot);
-                    continue;
                 }
+                // create punctMark and shorten token
                 SpecialCharacter *punctMark = new SpecialCharacter(token.substr(token.size() - 1));
+                if (newWord->isEndQuote()) {
+                    punctMark->setEndQuote(true);
+                    newWord->setEndQuote(false);
+                }
                 token = token.substr(0, token.size() - 1);
-                if (token != "") {
-                    if (token.back() == '\"' or token.back() == '\235') {
-                        token = token.substr(0, token.size()-1);
-                        newWord->setEndQuote();
+                if (token == "") {
+                    if (newWord->isEndQuote()) {
+                        punctMark->setEndQuote(true);
                     }
-                    if (token.front() == '\"' or token.front() == '\342') {
-                        token = token.substr(1, token.size()-1);
-                        newWord->setStartQuote();
+                    if (newWord->isStartQuote()) {
+                        punctMark->setStartQuote(true);
                     }
-                    newWord->setString(token);
-                    sentence->addWord(newWord);
                 }
-                sentence->addWord(punctMark);
-
-                // end sentence and start a new one.
-                addSentence(sentence);
-                sentence = new Sentence();
+                // don't add token (we use insertSkip and add it later)
+                sentence->insertWord(punctMark, sentence->size()-insertSkip+1);
+                if (punctMark->getString() == "." or punctMark->getString() == "!" or punctMark->getString() == "?") {
+                    sentenceOver = true;
+                }
             }
         }
-        else if (token.back() == ',') {
-            // split off comma as a seperate word (punctuation = true).
+        // now finalize word:
+        if (token.back() == '\"' or token.back() == '\235') {
             token = token.substr(0, token.size()-1);
-            SpecialCharacter* comma = new SpecialCharacter(",");
-
-            // check for abbreviation and ... again
-            if (token.find("...") != string::npos) {
-                // split triple dot from string (if there is more to the string)
-                if (token != "...") {
-                    newWord->setString(token.substr(0, token.size()-3));
-                    sentence->addWord(newWord);
-                }
-                SpecialCharacter *tripleDot = new SpecialCharacter(token.substr(token.size()-3, token.size()));
-                sentence->addWord(tripleDot); sentence->addWord(comma);
-                continue;
-            }
-            // check for quotes again
-            if (token.back() == '\"' or token.back() == '\235') {
-                token = token.substr(0, token.size()-1);
-                newWord->setString(token);
-                newWord->setEndQuote();
-            }
-            if (token.front() == '\"' or token.front() == '\342') {
-                token = token.substr(1, token.size()-1);
-                newWord->setString(token);
-                newWord->setStartQuote();
-            }
-            if (token != "") {
-                newWord->setString(token);
-                if (abbreviationDFA->accepts(token)) {
-                    newWord->setAbbreviation();
-                }
-                sentence->addWord(newWord);
-            }
-            sentence->addWord(comma);
+            newWord->setEndQuote(true);
         }
-        else {
-            newWord->setString(token);
-            sentence->addWord(newWord);
+        if (token.front() == '\"' or token.front() == '\342') {
+            token = token.substr(1, token.size()-1);
+            newWord->setStartQuote(true);
+        }
+        newWord->setString(token);
+        // add word
+        if (insertSkip >= 0 && newWord->getString() != "") {
+            sentence->insertWord(newWord, sentence->size() - insertSkip);
+        }
+        else if (insertSkip >= 0 && newWord->getString() == "") {delete newWord;}
+        if (sentenceOver) {
+            addSentence(sentence);
+            sentence = new Sentence();
         }
     }
     // if the text doesn't end with a '.'
