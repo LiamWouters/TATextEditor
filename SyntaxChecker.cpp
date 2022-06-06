@@ -1008,3 +1008,7 @@ bool SyntaxChecker::validHTML(const string &htmlFile) {
     return true;
 
 }
+
+const vector<string> &SyntaxChecker::getHtmlIllegalBegin() const {
+    return htmlIllegalBegin;
+}

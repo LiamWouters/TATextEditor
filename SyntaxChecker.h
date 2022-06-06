@@ -30,6 +30,7 @@ class SyntaxChecker {
                                   "²", "³", "(", ")", "[", "]", "{", "}", "!", "+", "-", "*", "$", "£", "´", "`", "|", "~",
                                   ";", "§", "<", ">", "\\", "°", "#", "^", " "};
 
+
     vector<string> htmlLegal2 = {",", "&", "@",
                                  "²", "³", "(", ")", "[", "]", "{", "}", "!", "+", "-", "*", "$", "£", "´", "`", "|", "~",
                                  ";", "§", "<", ">", "\\", "°", "#", "^",};
@@ -47,6 +48,8 @@ class SyntaxChecker {
     string endLine = "\n";
 
 public:
+
+    const vector<string> &getHtmlIllegalBegin() const;
 
     bool validJson(string Jsonfile);
 
