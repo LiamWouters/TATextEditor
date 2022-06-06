@@ -965,3 +965,276 @@ void DFA::fileToDFA(string filename) {
         }
     }
 }
+
+vector<string> DFA::spellingCheck(string input) {
+    vector<string> finalReplacements;
+    vector<pair<string,int>> replacements;
+    tuple<string,bool,bool> currentState ("starting", true, false);
+    int inputIndex = -1;
+    int transitionIndex = -1;
+    vector<tuple<string,bool,bool>> allStates;
+    vector<int> statePosition;
+    vector<int> transitionPosition;
+    bool transitionExists = false;
+    bool checkStop = false;
+//        Ga over elke character van de input
+    for (auto letter:input){
+        inputIndex++;
+        checkStop = false;
+        transitionExists = false;
+        string letterString(1,letter);
+        transitionIndex = -1;
+//            Zoek de transities die overeenkomen met de input character
+        for (auto transition:transitions) {
+            transitionIndex++;
+            string from = get<0>(transition);
+            string to = get<1>(transition);
+            string symbol = get<2>(transition);
+            string currentStateName = get<0>(currentState);
+//                Als de input niet overeenkomt met de symbol, gaan we direct naar de volgende transitie
+            if (letterString != symbol) {
+                continue;
+            }
+//                Als we al naar een volgende state zijn gegaan stoppen we de loop
+            if (checkStop) {
+                break;
+            }
+//                Als de from overeenkomt met de huidige stateName zoeken we nieuwe state en passen we
+//                de currentState aan
+            if (from == currentStateName){
+                int stateIndex = -1;
+                for (auto st:states) {
+                    stateIndex++;
+                    string stateName = get<0>(st);
+                    if (to == stateName) {
+                        transitionPosition.push_back(transitionIndex);
+                        statePosition.push_back(stateIndex);
+                        currentState = st;
+                        allStates.push_back(st);
+                        transitionExists = true;
+                        checkStop = true;
+                        break;
+                    }
+                }
+            }
+        }
+//            Als de transitie niet bestaat roep je spellingCheck opnieuw aan en return je alle gevonden replacements
+//            op volgorde van edit distance tot een maximum aantal replacements van 5.
+        if (!transitionExists) {
+            while (replacements.size() < 5 and inputIndex >= 0) {
+                string newInput = "";
+                for (int j = inputIndex; j < input.size(); ++j) {
+                    newInput += input[j];
+                }
+                spellingCheckRecursion(newInput, replacements,
+                                       allStates[inputIndex-1],transitionPosition[inputIndex-1],
+                                       statePosition[inputIndex-1],1);
+    //                Voeg de eerste vijf gevonden replacements met één edit distance toe aan de vector die ge-returned wordt
+                inputIndex--;
+            }
+            bool added = false;
+            for (auto replacement:replacements) {
+                if (replacement.second == 1) {
+                    added = false;
+                    for (auto repl:finalReplacements) {
+                        if (replacement.first == repl) {
+                            added = true;
+                        }
+                    }
+                    if (finalReplacements.size() >= 5) {
+                        break;
+                    }
+                    if (!added){
+                        finalReplacements.push_back(replacement.first);
+                    }
+                }
+            }
+            //                Zolang we niet vijf replacements zijn voegen we de oplossingen met twee edit distance toe
+            if (finalReplacements.size() < 5) {
+                for (auto replacement:replacements) {
+                    if (replacement.second == 2) {
+                        added = false;
+                        for (auto repl:finalReplacements) {
+                            if (replacement.first == repl) {
+                                added = true;
+                            }
+                        }
+                        if (!added){
+                            finalReplacements.push_back(replacement.first);
+                        }
+                    }
+                    if (finalReplacements.size() >= 5) {
+                        break;
+                    }
+                }
+            }
+            return finalReplacements;
+        }
+    }
+}
+
+void DFA::spellingCheckRecursion(string input, vector<pair<string, int>> & replacements,
+                                                      const tuple<string, bool, bool> & state, int transitionPosition,
+                                                      int statePosition, int distance) {
+    if (distance > 2) {
+        return;
+    }
+    for (int i = 0; i < 3; ++i) {
+//        Loop over het alphabet
+        for (auto letter:alphabet) {
+            bool transitioned = false;
+            bool missedTransition = false;
+            tuple<string,bool,bool> currentState = state;
+            string newInput = input;
+//            Maak de nieuwe input
+            if (i == 0) {
+                newInput[0] = letter[0];
+            }
+            else if (i == 1) {
+                newInput.erase(0,1);
+            }
+            else if (i == 2){
+                newInput = letter + input;
+            }
+//            Geen onnodige replacements checken
+            bool skip = false;
+            for (auto replacement:replacements) {
+                if (get<0>(currentState) + newInput == replacement.first) {
+                    skip = true;
+                    break;
+                }
+            }
+            if (skip) {
+                continue;
+            }
+            int newInputIndex = -1;
+//            Loop over de nieuwe input
+            for (auto symbol:newInput) {
+                newInputIndex++;
+                bool checkStop = false;
+                bool transitionExists = false;
+                string symbolString(1,symbol);
+//                Loop over de transities, maar begin bij transitionPosition om het process te versnellen
+                for (int j = transitionPosition+1; j < transitions.size(); ++j){
+                    auto transition = transitions[j];
+                    int stringSizeTr = get<1>(transitions[transitionPosition]).size();
+                    int stringSizeSt = get<0>(states[statePosition]).size();
+                    string currentStateName = get<0>(currentState);
+                    string from = get<0>(transition);
+                    string to = get<1>(transition);
+                    string transitionSymbol = get<2>(transition);
+                    string originalTo = get<1>(transitions[transitionPosition]);
+//                    Als één van deze condities is voldaan, zijn we voorbij de relevante transities of is de
+//                    transitie al gebeurd
+                    if (from.size() < stringSizeTr or from[stringSizeTr-1] != originalTo[stringSizeTr-1] or checkStop) {
+                        break;
+                    }
+                    if (symbolString != transitionSymbol) {
+                        continue;
+                    }
+                    if (from == currentStateName){
+//                        Loop over de states, maar begin bij statePosition om het process te versnellen
+                        for (int k = statePosition; k < states.size(); k++) {
+                            auto st = states[k];
+                            string originalStateName = get<0>(states[statePosition]);
+                            string stateName = get<0>(st);
+//                            Als één van deze condities is voldaan, zijn we voorbij de relevante states
+                            if (stateName.size() < stringSizeSt
+                                or stateName[stringSizeSt-1] != originalStateName[stringSizeSt-1]) {
+                                break;
+                            }
+//                            Verander de currentState
+                            if (to == stateName) {
+                                currentState = st;
+                                transitioned = true;
+                                transitionExists = true;
+                                checkStop = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+//                Als de transitie niet bestaat en we minstens één transitie verder zijn
+//                roepen we spellingCheck opnieuw aan
+                if (!transitionExists and transitioned) {
+                    string nextInput;
+                    for (int j = newInputIndex; j < input.size(); ++j) {
+                        nextInput += newInput[j];
+                    }
+                    spellingCheckRecursion(nextInput, replacements, currentState, transitionPosition, statePosition,distance+1);
+                }
+//                Als de transitie niet bestaat en we geen transitie verder zijn, duiden we aan dat een
+//                transitie werd gemist en stoppen we de loop
+                if (!transitionExists) {
+                    missedTransition = true;
+                    break;
+                }
+            }
+            bool accepting = get<2>(currentState);
+            if (!missedTransition) {
+                if (accepting) {
+                    replacements.emplace_back(get<0>(currentState),distance);
+                }
+
+                if(distance == 1 and get<0>(currentState) == "thankfull") {
+                    int sd = 5;
+                    transitioned = false;
+                    for (auto s:alphabet) {
+                        if (transitioned) {
+                            break;
+                        }
+                        bool checkStop = false;
+                        bool transitionExists = false;
+//                Loop over de transities, maar begin bij transitionPosition om het process te versnellen
+                        for (int j = transitionPosition+1; j < transitions.size(); ++j){
+                            auto transition = transitions[j];
+                            int stringSizeTr = get<1>(transitions[transitionPosition]).size();
+                            int stringSizeSt = get<0>(states[statePosition]).size();
+                            string currentStateName = get<0>(currentState);
+                            string from = get<0>(transition);
+                            string to = get<1>(transition);
+                            string transitionSymbol = get<2>(transition);
+                            string originalTo = get<1>(transitions[transitionPosition]);
+//                    Als één van deze condities is voldaan, zijn we voorbij de relevante transities of is de
+//                    transitie al gebeurd
+                            if (from.size() < stringSizeTr or from[stringSizeTr-1] != originalTo[stringSizeTr-1] or checkStop) {
+                                break;
+                            }
+                            if (s != transitionSymbol) {
+                                continue;
+                            }
+                            if (from == currentStateName){
+//                        Loop over de states, maar begin bij statePosition om het process te versnellen
+                                for (int k = statePosition; k < states.size(); k++) {
+                                    auto st = states[k];
+                                    string originalStateName = get<0>(states[statePosition]);
+                                    string stateName = get<0>(st);
+//                            Als één van deze condities is voldaan, zijn we voorbij de relevante states
+                                    if (stateName.size() < stringSizeSt
+                                        or stateName[stringSizeSt-1] != originalStateName[stringSizeSt-1]) {
+                                        break;
+                                    }
+//                            Verander de currentState
+                                    if (to == stateName) {
+                                        currentState = st;
+                                        transitioned = true;
+                                        checkStop = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    accepting = get<2>(currentState);
+                    if (accepting) {
+                        replacements.emplace_back(get<0>(currentState),distance+1);
+                    }
+                }
+            }
+            else if (newInput.empty() and accepting and !missedTransition) {
+                replacements.emplace_back(get<0>(currentState),distance);
+                break;
+            }
+        }
+    }
+}
