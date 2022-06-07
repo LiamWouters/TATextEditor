@@ -565,10 +565,10 @@ TEST(HTML, invalidTag){
 }
 
 TEST(fileToDFA, happyday) {
-    DFA dfa("../SavedAutomata/AbbreviationsDFA2.json");
+    DFA dfa("../SavedAutomata/AbbreviationsDFA.json");
     vector<string> words;
     ifstream file;
-    file.open("../SavedAutomata/Abbreviations2.txt");
+    file.open("../SavedAutomata/Abbreviations.txt");
     while (!file.eof()) {
         string s;
         getline(file,s);
