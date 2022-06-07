@@ -1,0 +1,41 @@
+"Climatc change" and "global warming" are often used interchangeably but have distinct meanings. Similarly, the terms
+"weather" and "climate" are sometimes confused, though they refer to events with broadly different spatial- and timescales.
+
+Weather vs. Climate.
+Weather refers to atmospheric conditions that occur locally over short periods of time, from minutes to hours or days.
+Familiar examples include rain, snow, clouds, winds, floods or thunderstorms.
+
+Climate, on the other hand, refers to regional or even global average temperature over a certain period of time, humidity and rainfall
+patterns over seasons, years or decades.
+
+
+What Is Global Warming?
+Global warming is the heating of the climate system of Earth, observed since before the industrial period
+(between 1850 and 1900) due to human activities, primarily fossil fuel burning, which increases heat, trapping greenhouse
+gas levels in the atmosphere. The term is frequently used interchangeably with the term climate change, though the
+latter refers to both humanly and naturally produced warming and the effects it has on our planet. It is most commonly
+measured as the average increase in global surface temperature of earth.
+
+Since before the industrial period, human activities are estimated to have increased the global average temperature of the Earth by
+about 1 degree Celsius (1.8 degrees Fahrenheit), a number that is currently increasing by 0.2 degrees Celsius
+(0.36 degrees Fahrenheit) per decade. It is unequivocal that human influence has warmed the Earth.
+
+What Is Climate Change?
+Climate change is a long change in the average weather patterns that have come to define the local, regional
+and global climates of our Earth. These changes have a broad range of observed effects that are synonymous with the term.
+
+Changes observed in our climate since the early 20th century are primarily driven by human activities, particularly
+fossil fuel burning, which increases heat-trapping greenhouse gas levels in the atmosphere, raising the average
+surface temperature. These produced temperature increases are commonly referred to as global warming.
+Natural processes can also contribute to climate change, including internal variability (e.g. cyclical ocean patterns
+like El Niño, La Niña and the Pacific Decadal Oscillation) and external forces
+(e.g. volcanic activity, changes in sun energy output, variations in the orbit of Earth).
+
+Scientists use observations from the ground, air and space, along with theoretical models, to monitor and study past,
+present and future climate change. Climate data records provide evidence of climate change key indicators,
+such as global land and ocean temperature increases; rising sea levels; ice loss at Earth’s poles and in mountain glaciers;
+frequency and severity changes in extreme weather such as hurricanes, heatwaves, wildfires, droughts, floods and precipitation;
+and cloud and vegetation cover changes, to name but a few.
+
+Regex: cloud
+Replacement: cumulus
