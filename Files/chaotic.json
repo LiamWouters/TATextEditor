@@ -1,0 +1,51 @@
+{
+
+  "start": true,
+
+  "chaoticList": [
+
+    "this",
+    "is",
+    "a test",
+
+    [
+
+      "Does",
+      "A sublist ruin it?",
+      "It shouldn't."
+
+    ],
+
+    "One plus one is...",
+    2,
+
+    "Three divided by 2 is...",
+    1.5,
+
+    {
+      "Axel likes these Genshin characters": [
+        "Yanfei",
+        "Yelan",
+        "Raiden Shogun"
+      ]
+    },
+
+    {
+      "Axel wants these characters in the future": [
+        {
+          "Kaedehara Kazuha": true
+        },
+        {
+          "Klee": false
+        },
+        {
+          "Sage (not from this game)": null
+        }
+      ]
+    }
+
+  ],
+
+  "notFinishedYet": false
+
+}

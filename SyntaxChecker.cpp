@@ -51,6 +51,9 @@ bool SyntaxChecker::validJson(string jsonFileString){
     string line;
     ifstream f(jsonFileString);
     while(getline(f, line)){
+        if (line.find("\r") != string::npos) {
+            line = line.substr(0,line.size()-1);
+        }
         readInput += line;
         readInput += '\n';
     }
