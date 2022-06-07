@@ -1019,3 +1019,295 @@ const vector<string> &SyntaxChecker::getHtmlIllegalBegin() const {
 const vector<string> &SyntaxChecker::getNumbersString() const {
     return numbersString;
 }
+
+bool SyntaxChecker::openword(string woord) {
+    if(find(c.begin(),c.end(),woord) !=c.end()){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+bool SyntaxChecker::openword1(string woord) {
+    if(find(c1.begin(),c1.end(),woord) != c1.end()){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+bool SyntaxChecker::correctname ( const string &cpp,const string& Cfile1 ) {
+    string d = " " + Cfile1+"::";
+    if ( cpp == d) {
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+bool SyntaxChecker::legalname(const string &cpp) {
+    for(auto char1: cpp){
+        if(find(htmlLegal2.begin(),htmlLegal2.end(),to_string(char1)) != htmlLegal2.end()){
+            return false;
+        }
+    }
+    return true;
+}
+
+bool SyntaxChecker::check(const string& line,const string& Cfile1) {
+    string newfunction;
+    for (int i = 0; i < line.size(); ++i) {
+        while (line[i]!=' '){
+            newfunction+=line[i];
+            i+=1;
+        }
+        if (!openword(newfunction)){
+            return false;
+        }
+        if (openword(newfunction)){
+            newfunction.clear();
+            while (i!=Cfile1.size()+2){
+                newfunction+=line[i];
+                i+=1;
+            }
+            if (!correctname(newfunction,Cfile1)){
+                return false;
+            }
+            if (correctname(newfunction,Cfile1)){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+//bool SyntaxChecker :: validcplus (const string &Cfile,const string& Cfile1) {
+//    ifstream i(Cfile);
+//    string line;
+//    string cpp;
+//    vector<string>functienaam;
+//    while(getline(i, line)){
+//        cpp += line;
+//        cpp += "\n";
+//    }
+//    vector<pair<int, string>> allTags;
+//    vector<pair<int, string>> beginTags;
+//    int t=0;
+//    int currentLine = 1;
+//    string woord;
+
+//    Text text;
+//    text.Tokenize(Cfile);
+//    for (int j = 0; j <text.getSentences().size() ; ++j) {
+//        for (int k = 0; k <text.getSentences()[j]->getWords().size() ; ++k) {
+//        if(t==0){
+//             woord= text.getSentences()[j]->getWords()[k]->getString();
+//            if(openword(woord)){
+//                t=1;
+//                continue;
+//            }
+//            else{
+//                cout<<"fout begin op line " +to_string(currentLine);
+//                return false;
+//        }
+//    }
+//        if(t==1){
+//            woord = text.getSentences()[j]->getWords()[k]->getString();
+//            string h;
+//            string legal;
+//            h=woord.substr(0,woord.find(':'));
+//            legal=woord.substr(woord.find(':'),woord.find('('));
+//            if (correctname(h,Cfile1)){
+//                    functienaam.push_back(woord);
+//                    t+=1;
+//                    continue;
+//                }
+//
+//            else{
+//                cout<<"foute cpp naam";
+//                return false;
+//            }
+//        }
+//            if (t==2){
+//                woord = text.getSentences()[j]->getWords()[k]->getString();
+//
+//            }
+//
+//        }
+//
+//    return false;
+//}
+//}
+
+bool SyntaxChecker::validcplus (const string &Cfile,const string& Cfile1) {
+    ifstream i(Cfile);
+    string line;
+    string cpp;
+    string a;
+    int aantal = 0;
+    vector<string>functienaam;
+    while(getline(i, line)){
+        cpp += line;
+        cpp += "\n";
+    }
+    vector<pair<int, string>> allTags;
+    vector<pair<int, string>> beginTags;
+    int t=0;
+    int currentLine = 1;
+    string woord;
+    string newfunction;
+    for (int j = 0; j <cpp.size() ; ++j) {
+        if(t==0){
+            while (cpp[j]!=' '){
+                newfunction+=cpp[j];
+                j+=1;
+            }
+//            if (newfunction==to_string('\n')){
+//                continue;
+//            }
+            if (!openword(newfunction)){
+                cout<<"fout begin van functie \n ";
+                return false;
+            }
+            if (openword(newfunction)){
+                newfunction.clear();
+                int r=0;
+                while (r!=Cfile1.size()+3){
+                    newfunction+=cpp[j];
+                    j+=1;
+                    r+=1;
+                }
+                if (!correctname(newfunction,Cfile1)){
+                    cerr<<"foute cpp naam \n";
+                    return false;
+                }
+                newfunction.clear();
+                while((cpp[j]!='(')){
+                    if (find(htmlLegal2.begin(),htmlLegal2.end(),to_string(cpp[j]))!=htmlLegal2.end()){
+                        cerr<<"illegal char in functionname on line " + to_string(currentLine);
+                        return false;
+                        break;
+                    }
+                    newfunction+=cpp[j];
+                    j+=1;
+                }
+                functienaam.push_back(newfunction);
+                if (cpp[j]=='('){
+                    newfunction.clear();
+                    while(cpp[j]!=')'){
+                        newfunction+=cpp[j];
+                        j+=1;
+                        if (cpp[j]=='\n'){
+                            cout<<"geen matching haakje op lijn " + to_string(currentLine);
+                            return false;
+                        }
+                    }
+                    j+=1;
+                    if (cpp[j]!='{'){
+                        cout<<"{ vergten op lijn" +to_string(currentLine);
+                        return false;
+                    }
+
+                    if (cpp[j]=='{'){
+                        pair<int,string>m;
+                        m.first=j;
+                        m.second=functienaam.front();
+                        beginTags.push_back(m);
+                        t+=1;
+                        j+=2;
+                    }
+                }
+                else{
+                    cerr<<"( haakje vergeten op lijn " + to_string(currentLine);
+                    return false;
+                }
+            }
+        }
+        if (t==1){
+            string nieuw;
+            nieuw.clear();
+            newfunction.clear();
+            while(cpp[j]!=' ' and cpp[j]!='\n'){
+                nieuw+=cpp[j];
+                if (cpp[j]=='}'){
+                    aantal+=1;
+                }
+                j+=1;
+            }
+            if (openword1(nieuw)){
+                if (cpp[j]!='('  and cpp[j+1]!='(' ){
+                    cerr<<"geen openingshaakje op lijn " + to_string(currentLine);
+                    return false;
+                }
+                while(cpp[j]!=')'){
+                    newfunction+=cpp[j];
+                    j+=1;
+                    if (cpp[j]=='\n'){
+                        cerr<<"geen matching haakje op lijn " + to_string(currentLine);
+                        return false;
+                    }
+                }
+                j+=1;
+                if (cpp[j]!='{'){
+                    cerr<<"{ vergeten op lijn" +to_string(currentLine);
+                    return false;
+                }
+                functienaam.push_back(nieuw);
+                nieuw.clear();
+                if (cpp[j]=='{'){
+                    pair<int,string>m;
+                    m.first=j;
+                    m.second=functienaam.front();
+                    beginTags.push_back(m);
+                    j+=1;
+
+                }
+
+            }
+            if (cpp[j-1]=='{'){
+                pair<int,string>m;
+                m.first=j;
+                m.second="fout";
+                beginTags.push_back(m);
+            }
+
+            if (!openword1(nieuw) and cpp[j-1] != ' ' and cpp[j-1]!= '{' and cpp[j-1]!='}' and !nieuw.empty()){
+                string l=nieuw;
+                while (cpp[j]!='\n'){
+                    l+=cpp[j];
+                    j+=1;
+                    if (cpp[j]=='{'){
+                        pair<int,string>m;
+                        m.first=j;
+                        m.second="fout";
+                        beginTags.push_back(m);
+                    }
+                }
+                if (cpp[j-1]!=';'){
+                    cerr<<"; vergeten op lijn" +to_string(currentLine);
+                    return false;
+                }
+            }
+            currentLine+=1;
+
+            if (aantal==functienaam.size()){
+                functienaam.clear();
+                t=0;
+                continue;
+            }
+            if (aantal!=beginTags.size() and check(nieuw,Cfile1)){
+                cerr<<"ergens geen gesloten } ";
+                return false;
+            }
+//                if (j==cpp.size()-1 and aantal!=beginTags.size()){
+//                    cerr<<"ergens geen gesloten } ";
+//                    return false;
+//                }
+        }
+
+    }
+    cout<<"correcte functie";
+    return true;
+}
+

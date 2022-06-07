@@ -47,6 +47,11 @@ class SyntaxChecker {
 
     string endLine = "\n";
 
+    vector<string>c= {"bool","void","int","double","char","string","float","long"};
+
+    vector<string>c1={"if","for","while"};
+
+
 public:
 
     const vector<string> &getHtmlIllegalBegin() const;
@@ -61,6 +66,17 @@ public:
 
     SyntaxChecker();
 
+    bool openword(string);
+
+    bool openword1(string);
+
+    bool validcplus(const string &cpp,const string& cpp1);
+
+    bool correctname(const string&cpp,const string& );
+
+    bool legalname(const string&cpp);
+
+    bool check(const string& line,const string& Cfile1);
 };
 
 
