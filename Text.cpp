@@ -32,12 +32,19 @@ void Text::makeAbbreviationsAutomata() {
     ifstream abbreviationDFA;
     abbreviationDFA.open("../SavedAutomata/AbbreviationsDFA.json");
     if (!abbreviationDFA) {
+        DFA dfa = DFA();
+        dfa.fileToDFA("../SavedAutomata/Abbreviations.txt");
+        dfa.printToFile("AbbreviationsDFA");
+    }
+    /*
+     * OUDE MANIER
+    if (!abbreviationDFA) {
         // create NFA per word
         NFA nfa = NFA();
         nfa.fileToNFA("../SavedAutomata/Abbreviations.txt");
         DFA finalDFA = nfa.toDFA();
         finalDFA.printToFile("AbbreviationsDFA");
-    }
+    }*/
     abbreviationDFA.close();
 }
 
@@ -76,6 +83,9 @@ void Text::Tokenize(string filename) {
         // turn all characters to lowercase
         for (char& c : token) {
             c = tolower(c);
+        }
+        if (token.find("\r") != string::npos) {
+            token = token.substr(0,token.size()-1);
         }
         //
 

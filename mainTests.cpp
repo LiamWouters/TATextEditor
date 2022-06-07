@@ -8,6 +8,7 @@
 #include "Sentence.h"
 #include "Word.h"
 #include "SyntaxChecker.h"
+#include "DFA.h"
 using namespace std;
 
 int main(int argc, char** argv) {
@@ -562,4 +563,24 @@ TEST(HTML, invalidTag){
     string outPut = testing::internal::GetCapturedStdout();
     EXPECT_TRUE(outPut.find("Invalid space usage in tag on line") != string::npos);
     EXPECT_TRUE(outPut.find("Remove the space or add a proper attribute.") != string::npos);
+}
+
+TEST(fileToDFA, happyday) {
+    DFA dfa("../SavedAutomata/AbbreviationsDFA.json");
+    vector<string> words;
+    ifstream file;
+    file.open("../SavedAutomata/Abbreviations.txt");
+    while (!file.eof()) {
+        string s;
+        getline(file,s);
+        if (s.find("\r") != string::npos) {
+            s = s.substr(0,s.size()-1);
+        }
+        words.push_back(s);
+    }
+    for (auto word:words) {
+        bool actual = dfa.accepts(word);
+        EXPECT_TRUE(actual);
+        if (!actual) {cout << word << endl;}
+    }
 }
