@@ -53,10 +53,14 @@ public:
      */
     void addSentence(Sentence* s);
 
-    /***/
+    /*
+     * REQUIRE(properlyInitialized(), "Text wasn't initialized when calling find()");
+     */
     void Find(string filename, const string& search);
 
-    /***/
+    /*
+     * REQUIRE(properlyInitialized(), "Text wasn't initialized when calling replace()");
+     */
     void Replace(string filename,const  string& search, const string& replace);
 
     /*

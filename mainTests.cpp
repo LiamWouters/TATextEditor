@@ -519,3 +519,18 @@ TEST(HTML, invalidTag){
     EXPECT_TRUE(outPut.find("Invalid space usage in tag on line") != string::npos);
     EXPECT_TRUE(outPut.find("Remove the space or add a proper attribute.") != string::npos);
 }
+
+TEST(fileToDFA, happyday) {
+    DFA dfa("../SavedAutomata/AbbreviationsDFA2.json");
+    vector<string> words;
+    ifstream file;
+    file.open("../SavedAutomata/Abbreviations2.txt");
+    while (!file.eof()) {
+        string s;
+        getline(file,s);
+        words.push_back(s);
+    }
+    for (auto word:words) {
+        EXPECT_TRUE(dfa.accepts(word));
+    }
+}

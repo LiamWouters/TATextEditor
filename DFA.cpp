@@ -24,16 +24,16 @@ bool DFA::accepts(string s) {
     tuple<string,bool,bool> state;
     bool b = true;
     for (auto j:s){
-        if (!b) {
-            //cout << "fout alfabet" << endl;
-            return false;
-        }
         for(auto i:alphabet) {
             b = false;
             if (i == string(1,j)) {
                 b = true;
                 break;
             }
+        }
+        if (!b) {
+            //cout << "fout alfabet" << endl;
+            return false;
         }
     }
     for(auto i:states) if (get<1>(i)) state = i;
@@ -1031,36 +1031,36 @@ vector<string> DFA::spellingCheck(string input, string before, string after,Text
                 spellingCheckRecursion(newInput, replacements,
                                        allStates[inputIndex-1],transitionPosition[inputIndex-1],
                                        statePosition[inputIndex-1],distance+1);
-                if (distance == 0) {
-                    vector<string> words;
-                    for (auto l:alphabet) {
-                        words = spellingCheck(l+input,before,after,text,1);
-                        bool in = false;
-                        for (auto word:words) {
-                            for (auto repl:replacements) {
-                                if (word == repl.first) {
-                                    in = true;
-                                }
-                            }
-                            if (!in) {
-                                int dis = 1;
-                                if (word.size() == input.size()+1) {
-                                    for (int i = 1; i < word.size(); ++i) {
-                                        char test1 = word[i];
-                                        char test2 = input[i-1];
-                                        if (word[i] != input[i-1]) {
-                                            dis = 2;
-                                        }
-                                    }
-                                }
-                                else {
-                                    dis = 2;
-                                }
-                                replacements.emplace_back(pair<string,int> (word,dis));
-                            }
-                        }
-                    }
-                }
+//                if (distance == 0) {
+//                    vector<string> words;
+//                    for (auto l:alphabet) {
+//                        words = spellingCheck(l+input,before,after,text,1);
+//                        bool in = false;
+//                        for (auto word:words) {
+//                            for (auto repl:replacements) {
+//                                if (word == repl.first) {
+//                                    in = true;
+//                                }
+//                            }
+//                            if (!in) {
+//                                int dis = 1;
+//                                if (word.size() == input.size()+1) {
+//                                    for (int i = 1; i < word.size(); ++i) {
+//                                        char test1 = word[i];
+//                                        char test2 = input[i-1];
+//                                        if (word[i] != input[i-1]) {
+//                                            dis = 2;
+//                                        }
+//                                    }
+//                                }
+//                                else {
+//                                    dis = 2;
+//                                }
+//                                replacements.emplace_back(pair<string,int> (word,dis));
+//                            }
+//                        }
+//                    }
+//                }
     //                Voeg de eerste vijf gevonden replacements met één edit distance toe aan de vector die ge-returned wordt
                 inputIndex--;
             }

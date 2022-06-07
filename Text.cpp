@@ -344,6 +344,7 @@ vector<pair<vector<string>, int>> Text::createNgram(int n, string word) {
 }
 
 void Text::Find(string filename, const string& search) {
+    REQUIRE(properlyInitialized(), "Text wasn't initialized when calling find()");
     Text text;
     text.Tokenize(std::move(filename));
     for (auto zin:text.sentences) {
@@ -359,6 +360,7 @@ void Text::Find(string filename, const string& search) {
 }
 
 void Text::Replace(string filename,const  string& search, const string& replace) {
+    REQUIRE(properlyInitialized(), "Text wasn't initialized when calling replace()");
     Text text;
     text.Tokenize(std::move(filename));
     for (auto zin:text.sentences) {
