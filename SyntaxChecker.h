@@ -57,6 +57,8 @@ public:
 
     vector<string> getEverything();
 
+    const vector<string> &getNumbersString() const;
+
     SyntaxChecker();
 
 };

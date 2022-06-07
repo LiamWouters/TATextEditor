@@ -967,7 +967,7 @@ void DFA::fileToDFA(string filename) {
     }
 }
 
-vector<string> DFA::spellingCheck(string input, string before, string after,Text text) {
+vector<string> DFA::spellingCheck(string input, string before, string after,Text& text) {
     vector<string> finalReplacements;
     vector<pair<string,int>> replacements;
     tuple<string,bool,bool> currentState ("starting", true, false);

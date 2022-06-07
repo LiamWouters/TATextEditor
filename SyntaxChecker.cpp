@@ -1012,3 +1012,7 @@ bool SyntaxChecker::validHTML(const string &htmlFile) {
 const vector<string> &SyntaxChecker::getHtmlIllegalBegin() const {
     return htmlIllegalBegin;
 }
+
+const vector<string> &SyntaxChecker::getNumbersString() const {
+    return numbersString;
+}

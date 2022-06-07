@@ -62,7 +62,7 @@ public:
 
 //    vector<string> spellingCheckNgram(string, pair<vector<string>,int>,pair<vector<string>,int>);
 
-    vector<string> spellingCheck(string,string,string,Text);
+    vector<string> spellingCheck(string,string,string,Text&);
 
     void spellingCheckRecursion(string, vector<pair<string, int>>&, const tuple<string,
             bool, bool>& = tuple<string, bool, bool> ("False", false, false), int = 0, int = 0, int = 0);

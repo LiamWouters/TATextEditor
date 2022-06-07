@@ -2,18 +2,27 @@
 
   "Text": [
 
-    "Super Monke ball Banana Mania is a game in which you move a monkey inside a ball across a dangerous parcour.",
+    "Monkei ball Banana Mania is a game in which you move a monkey inside a ball across a dangerous level.",
     "This newest entry features all original stage from the original games.",
-    "It's very dificult, but also really fun."
+    "It's very har, but also really fup.",
+    "Over 300 levels at your disposal, and even some other ways to play.",
+    "You will certainly have a lot of play hours with this game.",
+    "To summarize the game in short, it has lots of bananas and monkeys.",
+    "Are you really surprised to hear this?",
+    "I do not think so.",
+    "By the way, every ball gets turned into a sphere because of the regular expression I added in the file.",
+    "Does it show every sphere except for this one in bold?",
+    "Awesome, just what I wanted and expected.",
+    "It's available on platforms of the current generation.",
+    "If you are lucky it might even be on sale.",
+    "Who knows?",
+    "Now let us briefly talk about final fantasy 9, now that is a game that does not get the attention it deserves.",
+    "I want to explain why I think that way, but if I do I spoil the story and I do not intend to do that.",
+    "Just play it if you have the time, I hope you will understand why I prais this game the way I do..."
 
   ],
 
-  "Text": [
-
-    ""
-
-  ],
-
-  "Regex": "R"
+  "Regex": "ball",
+  "Replacement": "sphere"
 
 }
