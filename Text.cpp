@@ -60,12 +60,12 @@ void Text::Tokenize(string filename) {
     file.open(filename);
 
     Sentence* sentence = new Sentence();
-
+    /*
     ifstream abbreviation;
-    abbreviation.open("../SavedAutomata/AbbreviationsDFA.json");
+    abbreviation.open("../SavedAutomata/AbbreviationsDFAOld.json");
     if (!abbreviation) {makeAbbreviationsAutomata();}
-    abbreviation.close();
-    DFA* abbreviationDFA = new DFA ("../SavedAutomata/AbbreviationsDFA.json");
+    abbreviation.close();*/
+    DFA* abbreviationDFA = new DFA ("../SavedAutomata/AbbreviationsDFAOld.json");
 
     while (!file.eof()) {
         string token;
@@ -76,6 +76,9 @@ void Text::Tokenize(string filename) {
         // turn all characters to lowercase
         for (char& c : token) {
             c = tolower(c);
+        }
+        if (token.find("\r") != string::npos) {
+            token = token.substr(0,token.size()-1);
         }
         //
 
