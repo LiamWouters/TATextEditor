@@ -5,6 +5,7 @@
 #include "Sentence.h"
 #include "Word.h"
 #include "SpecialCharacter.h"
+#include <limits>
 
 Sentence::Sentence() {
     _initCheck = this;
@@ -30,6 +31,12 @@ void Sentence::addWord(Word* token) {
     REQUIRE(properlyInitialized(), "Sentence wasn't initialized when calling addWord()");
     words.push_back(token);
     ENSURE(words[words.size()-1] == token, "Last word in sentence is now token");
+}
+
+void Sentence::insertWord(Word *token, int index) {
+    REQUIRE(properlyInitialized(), "Sentence wasn't initialized when calling insertWord()");
+    words.insert(words.begin() + index, token);
+    ENSURE(words[index] == token, "Word on given index in sentence is now token");
 }
 
 int Sentence::size() {

@@ -719,10 +719,10 @@ bool Word::isAbbreviation() {
     return abbreviation;
 }
 
-void Word::setStartQuote() {
+void Word::setStartQuote(bool b) {
     REQUIRE(properlyInitialized(), "Word wasn't initialized when calling setStartQuote()");
-    startquote = true;
-    ENSURE(startquote == true, "Word is the start of a quote");
+    startquote = b;
+    ENSURE(startquote == b, "value of startquote equals given value");
 }
 
 bool Word::isStartQuote() {
@@ -730,10 +730,10 @@ bool Word::isStartQuote() {
     return startquote;
 }
 
-void Word::setEndQuote() {
+void Word::setEndQuote(bool b) {
     REQUIRE(properlyInitialized(), "Word wasn't initialized when calling setEndQuote()");
-    endquote = true;
-    ENSURE(endquote == true, "Word is the end of a quote");
+    endquote = b;
+    ENSURE(endquote == b, "value of endquote equals given value");
 }
 
 bool Word::isEndQuote() {

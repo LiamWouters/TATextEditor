@@ -41,6 +41,8 @@ TEST(Tokenization, happyDay) {
 
     EXPECT_EQ("this", sentence1->getWord(0)->getString()); // all words transformed to lower case
     EXPECT_EQ("is", sentence1->getWord(1)->getString());
+    EXPECT_EQ(",", sentence1->getWord(5)->getString());
+    EXPECT_TRUE(sentence1->getWord(5)->isSpecialChar());
     EXPECT_EQ(".", sentence1->getWord(sentence1->size()-1)->getString());
     EXPECT_EQ("tokenization", sentence1->getWord(sentence1->size()-2)->getString());
 
@@ -71,7 +73,8 @@ TEST(Tokenization, RandgevalAbbreviations) {
 
     EXPECT_FALSE(text.getSentences()[2]->getWord(text.getSentences()[2]->size()-1)->isAbbreviation());
     EXPECT_EQ(".", text.getSentences()[2]->getWord(text.getSentences()[2]->size()-1)->getString());
-    EXPECT_EQ("efficiency)", text.getSentences()[2]->getWord(text.getSentences()[2]->size()-2)->getString());
+    EXPECT_EQ(")", text.getSentences()[2]->getWord(text.getSentences()[2]->size()-2)->getString());
+    EXPECT_EQ("efficiency", text.getSentences()[2]->getWord(text.getSentences()[2]->size()-3)->getString());
 
     EXPECT_FALSE(text.getSentences()[3]->getWord(text.getSentences()[3]->size()-1)->isAbbreviation());
     EXPECT_EQ(".", text.getSentences()[3]->getWord(text.getSentences()[3]->size()-1)->getString());
@@ -82,8 +85,8 @@ TEST(Tokenization, RandgevalAbbreviations) {
     EXPECT_EQ("youtuber", text.getSentences()[4]->getWord(text.getSentences()[4]->size()-2)->getString());
 
     //should be abbreviations:
-    EXPECT_TRUE(text.getSentences()[4]->getWord(2)->isAbbreviation());
-    EXPECT_EQ("dr.", text.getSentences()[4]->getWord(2)->getString());
+    EXPECT_TRUE(text.getSentences()[4]->getWord(3)->isAbbreviation());
+    EXPECT_EQ("dr.", text.getSentences()[4]->getWord(3)->getString());
 
     EXPECT_TRUE(text.getSentences()[5]->getWord(text.getSentences()[5]->size()-1)->isAbbreviation());
     EXPECT_EQ("vs.", text.getSentences()[5]->getWord(text.getSentences()[5]->size()-1)->getString());
@@ -101,7 +104,10 @@ TEST(Tokenization, RandgevalAbbreviations) {
     EXPECT_EQ("e.g.", text.getSentences()[5]->getWord(text.getSentences()[5]->size()-5)->getString());
 
     EXPECT_FALSE(text.getSentences()[5]->getWord(text.getSentences()[5]->size()-6)->isAbbreviation());
-    EXPECT_EQ("abbreviations:", text.getSentences()[5]->getWord(text.getSentences()[5]->size()-6)->getString());
+    EXPECT_EQ(":", text.getSentences()[5]->getWord(text.getSentences()[5]->size()-6)->getString());
+
+    EXPECT_FALSE(text.getSentences()[5]->getWord(text.getSentences()[5]->size()-7)->isAbbreviation());
+    EXPECT_EQ("abbreviations", text.getSentences()[5]->getWord(text.getSentences()[5]->size()-7)->getString());
 }
 
 TEST(Tokenization, RandgevalTripleDot) {
@@ -118,10 +124,48 @@ TEST(Tokenization, RandgevalTripleDot) {
     EXPECT_TRUE(text.getSentences()[2]->getWord(15)->isSpecialChar());
     EXPECT_EQ("...", text.getSentences()[2]->getWord(15)->getString());
 
+    EXPECT_TRUE(text.getSentences()[2]->getWord(25)->isSpecialChar());
+    EXPECT_EQ("...", text.getSentences()[2]->getWord(25)->getString()); // not caught as triple dot but caught the ',' after it
     EXPECT_TRUE(text.getSentences()[2]->getWord(26)->isSpecialChar());
-    EXPECT_EQ("...", text.getSentences()[2]->getWord(26)->getString()); // not caught as triple dot but caught the ',' after it
-    EXPECT_TRUE(text.getSentences()[2]->getWord(27)->isSpecialChar());
-    EXPECT_EQ(",", text.getSentences()[2]->getWord(27)->getString());
+    EXPECT_EQ(",", text.getSentences()[2]->getWord(26)->getString());
+}
+
+TEST(Tokenization, SpecialCharacters) {
+    Text text;
+    text.Tokenize("TokenizationSpecialChar.txt");
+
+    EXPECT_EQ(3, text.getSentences().size());
+
+    EXPECT_EQ(12, text.getSentences()[0]->size());
+    EXPECT_EQ(2, text.getSentences()[0]->getWordCount());
+    EXPECT_EQ("(", text.getSentences()[0]->getWord(0)->getString());
+    EXPECT_EQ("{", text.getSentences()[0]->getWord(1)->getString());
+    EXPECT_EQ("[", text.getSentences()[0]->getWord(2)->getString());
+    EXPECT_EQ("[", text.getSentences()[0]->getWord(3)->getString());
+    EXPECT_EQ("word", text.getSentences()[0]->getWord(4)->getString());
+    EXPECT_EQ("anotherword", text.getSentences()[0]->getWord(5)->getString());
+    EXPECT_EQ(")", text.getSentences()[0]->getWord(6)->getString());
+    EXPECT_EQ("!", text.getSentences()[0]->getWord(7)->getString());
+    EXPECT_EQ("!", text.getSentences()[0]->getWord(8)->getString());
+    EXPECT_EQ("!", text.getSentences()[0]->getWord(9)->getString());
+    EXPECT_EQ("]", text.getSentences()[0]->getWord(10)->getString());
+    EXPECT_EQ("]", text.getSentences()[0]->getWord(11)->getString());
+
+    EXPECT_EQ(5, text.getSentences()[1]->size());
+    EXPECT_EQ(1, text.getSentences()[1]->getWordCount());
+    EXPECT_EQ("[", text.getSentences()[1]->getWord(0)->getString());
+    EXPECT_EQ("word", text.getSentences()[1]->getWord(1)->getString());
+    EXPECT_EQ("]", text.getSentences()[1]->getWord(2)->getString());
+    EXPECT_EQ("}", text.getSentences()[1]->getWord(3)->getString());
+    EXPECT_EQ(".", text.getSentences()[1]->getWord(4)->getString());
+
+    // more special cases
+    EXPECT_EQ(4, text.getSentences()[2]->size());
+    EXPECT_EQ(3, text.getSentences()[2]->getWordCount());
+    EXPECT_EQ("$20", text.getSentences()[2]->getWord(0)->getString());
+    EXPECT_EQ("#hashtag", text.getSentences()[2]->getWord(1)->getString());
+    EXPECT_EQ("@name", text.getSentences()[2]->getWord(2)->getString());
+    EXPECT_EQ(".", text.getSentences()[2]->getWord(3)->getString());
 }
 
 ////////////////////

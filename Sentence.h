@@ -42,6 +42,12 @@ public:
     void addWord(Word* token);
 
     /*
+     * REQUIRE(properlyInitialized(), "Sentence wasn't initialized when calling insertWord()");
+     * ENSURE(words[index] == token, "Word on given index in sentence is now token");
+     */
+    void insertWord(Word* token, int index);
+
+    /*
      * REQUIRE(properlyInitialized(), "Sentence wasn't initialized when calling size()");
      */
     int size();
