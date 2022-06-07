@@ -8,6 +8,7 @@
 #include "Sentence.h"
 #include "Word.h"
 #include "SyntaxChecker.h"
+#include "DFA.h"
 using namespace std;
 
 int main(int argc, char** argv) {
@@ -565,16 +566,21 @@ TEST(HTML, invalidTag){
 }
 
 TEST(fileToDFA, happyday) {
-    DFA dfa("../SavedAutomata/AbbreviationsDFA2.json");
+    DFA dfa("../SavedAutomata/AbbreviationsDFA.json");
     vector<string> words;
     ifstream file;
-    file.open("../SavedAutomata/Abbreviations2.txt");
+    file.open("../SavedAutomata/Abbreviations.txt");
     while (!file.eof()) {
         string s;
         getline(file,s);
+        if (s.find("\r") != string::npos) {
+            s = s.substr(0,s.size()-1);
+        }
         words.push_back(s);
     }
     for (auto word:words) {
-        EXPECT_TRUE(dfa.accepts(word));
+        bool actual = dfa.accepts(word);
+        EXPECT_TRUE(actual);
+        if (!actual) {cout << word << endl;}
     }
 }
