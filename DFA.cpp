@@ -38,6 +38,7 @@ bool DFA::accepts(string s) {
     }
     for(auto i:states) if (get<1>(i)) state = i;
     for (auto i:s){
+        bool transitionExists = false;
         string a(1,i);
         for (auto j:transitions){
             if (a == "stop") break;
@@ -45,10 +46,15 @@ bool DFA::accepts(string s) {
                 for (auto z:states) {
                     if (get<1>(j) == get<0>(z) and a == get<2>(j)) {
                         state = z;
+                        transitionExists = true;
                         a = "stop";
+                        break;
                     }
                 }
             }
+        }
+        if (!transitionExists) {
+            return false;
         }
     }
     return get<2>(state);
