@@ -8,6 +8,8 @@
 #include "Sentence.h"
 #include "Word.h"
 #include "SyntaxChecker.h"
+#include "DFA.h"
+
 using namespace std;
 
 int main(int argc, char** argv) {
