@@ -985,8 +985,11 @@ vector<string> DFA::spellingCheck(string input, string before, string after,Text
     vector<int> transitionPosition;
     bool transitionExists = false;
     bool checkStop = false;
+    int teller = 0;
+    int size = input.size();
 //        Ga over elke character van de input
     for (auto letter:input){
+        teller++;
         inputIndex++;
         checkStop = false;
         transitionExists = false;
@@ -1028,7 +1031,7 @@ vector<string> DFA::spellingCheck(string input, string before, string after,Text
         }
 //            Als de transitie niet bestaat roep je spellingCheck opnieuw aan en return je alle gevonden replacements
 //            op volgorde van edit distance tot een maximum aantal replacements van 5.
-        if (!transitionExists) {
+        if (!transitionExists or (teller == size and !get<2>(currentState))) {
             while (replacements.size() < 5 and inputIndex >= 1) {
                 string newInput = "";
                 for (int j = inputIndex; j < input.size(); ++j) {
