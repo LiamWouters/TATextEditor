@@ -911,7 +911,7 @@ void DFA::fileToDFA(string filename) {
     ifstream file;
     file.open(filename);
 
-    alphabet = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
+    alphabet = {".", "-", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
     tuple<string, bool, bool> startState = tuple<string,bool,bool> ("starting", true, false);
     states.push_back(startState);
     string line;

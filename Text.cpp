@@ -32,12 +32,19 @@ void Text::makeAbbreviationsAutomata() {
     ifstream abbreviationDFA;
     abbreviationDFA.open("../SavedAutomata/AbbreviationsDFA.json");
     if (!abbreviationDFA) {
+        DFA dfa = DFA();
+        dfa.fileToDFA("../SavedAutomata/Abbreviations.txt");
+        dfa.printToFile("AbbreviationsDFA");
+    }
+    /*
+     * OUDE MANIER
+    if (!abbreviationDFA) {
         // create NFA per word
         NFA nfa = NFA();
         nfa.fileToNFA("../SavedAutomata/Abbreviations.txt");
         DFA finalDFA = nfa.toDFA();
         finalDFA.printToFile("AbbreviationsDFA");
-    }
+    }*/
     abbreviationDFA.close();
 }
 
@@ -60,12 +67,12 @@ void Text::Tokenize(string filename) {
     file.open(filename);
 
     Sentence* sentence = new Sentence();
-    /*
+
     ifstream abbreviation;
-    abbreviation.open("../SavedAutomata/AbbreviationsDFAOld.json");
+    abbreviation.open("../SavedAutomata/AbbreviationsDFA.json");
     if (!abbreviation) {makeAbbreviationsAutomata();}
-    abbreviation.close();*/
-    DFA* abbreviationDFA = new DFA ("../SavedAutomata/AbbreviationsDFAOld.json");
+    abbreviation.close();
+    DFA* abbreviationDFA = new DFA ("../SavedAutomata/AbbreviationsDFA.json");
 
     while (!file.eof()) {
         string token;
